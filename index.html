@@ -3,24 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Minimal Calculator</title>
+  <title>Futuristic Calculator</title>
   <style>
     :root {
-      --bg: #0d1117;
-      --btn-bg: #1c222e;
-      --btn-hover: #2d3344;
-      --text: #e3e8ef;
-      --accent: #00ffc3;
+      --bg: #0f111a;
+      --btn-bg: #1e2233;
+      --btn-hover: #2e3650;
+      --text: #e5e9f0;
+      --accent: #00ffcc;
       --danger: #ff4d4d;
-      --warn: #f39c12;
-      --font: 'Segoe UI', 'Roboto', sans-serif;
-      --glow: 0 0 10px rgba(0, 255, 195, 0.4);
+      --warn: #ffb347;
+      --glow: 0 0 12px rgba(0, 255, 195, 0.5);
+      --font: 'Segoe UI', sans-serif;
     }
 
     body.light {
-      --bg: #f4f6f8;
-      --btn-bg: #e3e7eb;
-      --btn-hover: #cdd4db;
+      --bg: #f1f4f8;
+      --btn-bg: #dee2e6;
+      --btn-hover: #cfd6db;
       --text: #212529;
       --accent: #007bff;
       --danger: #dc3545;
@@ -29,14 +29,36 @@
     }
 
     body.neon {
-      --bg: #080b26;
-      --btn-bg: #141648;
-      --btn-hover: #2a2e71;
+      --bg: #0b0b2a;
+      --btn-bg: #191947;
+      --btn-hover: #2d2d73;
       --text: #39ff14;
       --accent: #ff00ff;
       --danger: #ff073a;
       --warn: #ffa502;
-      --glow: 0 0 12px rgba(255, 0, 255, 0.5);
+      --glow: 0 0 15px rgba(255, 0, 255, 0.5);
+    }
+
+    body.matrix {
+      --bg: #000;
+      --btn-bg: #001f00;
+      --btn-hover: #004000;
+      --text: #00ff00;
+      --accent: #00ff00;
+      --danger: #ff0000;
+      --warn: #ffff00;
+      --glow: 0 0 12px #00ff00aa;
+    }
+
+    body.cyber {
+      --bg: #0c0c1c;
+      --btn-bg: #1f1f30;
+      --btn-hover: #353552;
+      --text: #0ff;
+      --accent: #0ff;
+      --danger: #f00;
+      --warn: #ff0;
+      --glow: 0 0 15px #0ff8;
     }
 
     * {
@@ -50,8 +72,8 @@
       color: var(--text);
       font-family: var(--font);
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       min-height: 100vh;
       padding: 1rem;
       transition: background 0.4s ease, color 0.4s ease;
@@ -60,53 +82,58 @@
     .calculator {
       width: 100%;
       max-width: 420px;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 1.5rem;
       padding: 1.5rem;
-      border-radius: 1rem;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4);
       backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     input.screen {
       width: 100%;
-      background: rgba(255, 255, 255, 0.07);
+      background: rgba(255,255,255,0.06);
       border: none;
       color: var(--text);
       font-size: 2rem;
       text-align: right;
-      padding: 14px;
+      padding: 12px;
       border-radius: 10px;
       margin-bottom: 6px;
-      outline: none;
     }
 
     .preview {
       text-align: right;
       font-size: 0.9rem;
-      color: #9fa6b2;
-      margin-bottom: 1rem;
+      color: #999;
       min-height: 20px;
+      margin-bottom: 1rem;
     }
 
-    .memory, .advanced, .buttons {
+    .grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
-      margin-bottom: 1rem;
+      margin-bottom: 12px;
     }
 
     button {
-      padding: 0.9rem;
-      font-size: 1rem;
+      padding: 1rem;
       border: none;
       border-radius: 10px;
+      font-size: 1.1rem;
       background: var(--btn-bg);
       color: var(--text);
       font-weight: 500;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s, background 0.2s;
+      transition: 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
     button:hover {
@@ -115,14 +142,12 @@
     }
 
     button:active {
-      transform: scale(0.95);
+      transform: scale(0.96);
     }
 
     .equal {
       background: var(--accent);
       color: #000;
-      grid-column: span 2;
-      font-weight: bold;
       box-shadow: var(--glow);
     }
 
@@ -136,42 +161,23 @@
       color: #fff;
     }
 
-    .theme, .history-clear {
-      background: var(--accent);
-      color: #000;
-      font-weight: 600;
-    }
-
     .history {
-      margin-top: 0.8rem;
-      font-size: 0.8rem;
-      color: #b0b0b0;
-      max-height: 90px;
+      font-size: 0.85rem;
+      max-height: 100px;
       overflow-y: auto;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      color: #aaa;
+      border-top: 1px solid rgba(255,255,255,0.05);
       padding-top: 0.5rem;
     }
 
     .history-entry {
-      margin-bottom: 5px;
+      margin-bottom: 4px;
       font-style: italic;
-      opacity: 0.85;
     }
 
     @media (max-width: 500px) {
-      .calculator {
-        padding: 1rem;
-        border-radius: 0.8rem;
-      }
-
-      button {
-        padding: 0.8rem;
-        font-size: 0.95rem;
-      }
-
-      input.screen {
-        font-size: 1.8rem;
-      }
+      .calculator { padding: 1rem; }
+      button { font-size: 1rem; padding: 0.8rem; }
     }
   </style>
 </head>
@@ -180,49 +186,46 @@
     <input type="text" id="display" class="screen" disabled />
     <div class="preview" id="preview"></div>
 
-    <div class="memory">
-      <button onclick="memoryAdd()">M+</button>
-      <button onclick="memorySubtract()">M-</button>
+    <div class="grid">
+      <button onclick="clearDisplay()" class="clear">C</button>
+      <button onclick="deleteLast()" class="del">⌫</button>
+      <button onclick="cycleTheme()">🎨</button>
+      <button onclick="clearHistory()">🗑</button>
+
+      <button onclick="appendValue('M+')">M+</button>
+      <button onclick="appendValue('M-')">M-</button>
       <button onclick="memoryRecall()">MR</button>
       <button onclick="memoryClear()">MC</button>
-    </div>
 
-    <div class="advanced">
       <button onclick="appendValue('sin(')">sin</button>
       <button onclick="appendValue('cos(')">cos</button>
       <button onclick="appendValue('tan(')">tan</button>
       <button onclick="appendValue('log(')">log</button>
+
       <button onclick="appendValue('sqrt(')">√</button>
       <button onclick="appendValue('^')">^</button>
       <button onclick="appendValue('(')">(</button>
       <button onclick="appendValue(')')">)</button>
-    </div>
-
-    <div class="buttons">
-      <button class="clear" onclick="clearDisplay()">C</button>
-      <button class="del" onclick="deleteLast()">⌫</button>
-      <button onclick="appendValue('/')">÷</button>
-      <button onclick="appendValue('*')">×</button>
 
       <button onclick="appendValue('7')">7</button>
       <button onclick="appendValue('8')">8</button>
       <button onclick="appendValue('9')">9</button>
-      <button onclick="appendValue('-')">−</button>
+      <button onclick="appendValue('/')">÷</button>
 
       <button onclick="appendValue('4')">4</button>
       <button onclick="appendValue('5')">5</button>
       <button onclick="appendValue('6')">6</button>
-      <button onclick="appendValue('+')">+</button>
+      <button onclick="appendValue('*')">×</button>
 
       <button onclick="appendValue('1')">1</button>
       <button onclick="appendValue('2')">2</button>
       <button onclick="appendValue('3')">3</button>
-      <button onclick="appendValue('.')">.</button>
+      <button onclick="appendValue('-')">−</button>
 
       <button onclick="appendValue('0')">0</button>
+      <button onclick="appendValue('.')">.</button>
+      <button onclick="appendValue('+')">+</button>
       <button class="equal" onclick="calculateResult()">=</button>
-      <button class="theme" onclick="cycleTheme()">🎨</button>
-      <button class="history-clear" onclick="clearHistory()">🗑</button>
     </div>
 
     <div class="history" id="history"></div>
@@ -232,10 +235,9 @@
     const display = document.getElementById("display");
     const preview = document.getElementById("preview");
     const historyDiv = document.getElementById("history");
-
     let memory = 0;
     let themeIndex = 0;
-    const themes = ['glass', 'light', 'neon'];
+    const themes = ['glass', 'light', 'neon', 'matrix', 'cyber'];
 
     function appendValue(val) {
       display.value += val;
