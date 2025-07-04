@@ -8,7 +8,7 @@
   :root {
     --bg: #0d1117;
     --btn-bg: #1c222e;
-    --btn-hover: #293345;
+    --btn-hover: #2d3344;
     --text: #e3e8ef;
     --accent: #00ffc3;
     --danger: #ff4d4d;
@@ -19,24 +19,46 @@
 
   body.light {
     --bg: #f4f6f8;
-    --btn-bg: #dee2e6;
-    --btn-hover: #cbd3db;
-    --text: #1c1c1c;
+    --btn-bg: #e3e7eb;
+    --btn-hover: #cdd4db;
+    --text: #212529;
     --accent: #007bff;
-    --danger: #e53935;
+    --danger: #dc3545;
     --warn: #ffc107;
     --glow: none;
   }
 
   body.neon {
-    --bg: #0c0c2f;
-    --btn-bg: #191947;
-    --btn-hover: #2d2d73;
+    --bg: #080b26;
+    --btn-bg: #141648;
+    --btn-hover: #2a2e71;
     --text: #39ff14;
     --accent: #ff00ff;
     --danger: #ff073a;
     --warn: #ffa502;
-    --glow: 0 0 15px rgba(255, 0, 255, 0.5);
+    --glow: 0 0 15px rgba(255, 0, 255, 0.6);
+  }
+
+  body.sunset {
+    --bg: #2e1f27;
+    --btn-bg: #4a2d38;
+    --btn-hover: #633b4b;
+    --text: #ffe5d9;
+    --accent: #ff6b81;
+    --danger: #e74c3c;
+    --warn: #f39c12;
+    --glow: 0 0 10px rgba(255, 107, 129, 0.5);
+  }
+
+  body.matrix {
+    --bg: #000;
+    --btn-bg: #001a00;
+    --btn-hover: #003300;
+    --text: #00ff00;
+    --accent: #00ff99;
+    --danger: #ff3b3b;
+    --warn: #ffcc00;
+    --glow: 0 0 8px rgba(0, 255, 0, 0.4);
   }
 
   * {
@@ -52,21 +74,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    min-height: 100vh;
     padding: 1rem;
     transition: background 0.4s ease, color 0.4s ease;
   }
 
   .calculator {
     width: 100%;
-    max-width: 430px;
-    background: rgba(31, 39, 51, 0.8);
-    padding: 2rem;
-    border-radius: 1.5rem;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    max-width: 350px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 1rem;
     backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    animation: fadeIn 0.6s ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.5s ease;
   }
 
   @keyframes fadeIn {
@@ -77,46 +99,46 @@
   .tools {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 1.2rem;
+    margin-bottom: 1rem;
   }
 
   .tools button {
     background: var(--accent);
     color: #000;
     font-weight: 600;
-    font-size: 0.9rem;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.9rem;
     border: none;
-    cursor: pointer;
+    border-radius: 6px;
     box-shadow: var(--glow);
-    transition: transform 0.2s ease, filter 0.2s ease;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.3s;
   }
 
   .tools button:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.05);
+    transform: translateY(-1px);
+    filter: brightness(1.1);
   }
 
   input.screen {
     width: 100%;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.07);
     border: none;
     color: var(--text);
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     text-align: right;
-    padding: 14px;
-    border-radius: 12px;
-    margin-bottom: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 6px;
     outline: none;
   }
 
   .preview {
     text-align: right;
-    font-size: 0.95rem;
-    color: #aaa;
-    margin-bottom: 1rem;
-    min-height: 20px;
+    font-size: 0.85rem;
+    color: #9fa6b2;
+    margin-bottom: 0.8rem;
+    min-height: 16px;
   }
 
   .memory, .advanced, .buttons {
@@ -127,26 +149,26 @@
   }
 
   button {
-    padding: 1rem;
-    font-size: 1.1rem;
+    padding: 0.8rem;
+    font-size: 1rem;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     background: var(--btn-bg);
     color: var(--text);
     font-weight: 500;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, background 0.2s, box-shadow 0.3s;
   }
 
   button:hover {
     background: var(--btn-hover);
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
   }
 
   button:active {
-    transform: scale(0.96);
+    transform: scale(0.95);
   }
 
   .equal {
@@ -169,35 +191,36 @@
 
   .history {
     margin-top: 1rem;
-    font-size: 0.85rem;
-    color: #ccc;
-    max-height: 100px;
+    font-size: 0.8rem;
+    color: #b0b0b0;
+    max-height: 80px;
     overflow-y: auto;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 0.4rem;
   }
 
   .history-entry {
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     font-style: italic;
     opacity: 0.8;
   }
 
-  @media (max-width: 500px) {
+  @media (max-width: 480px) {
     .calculator {
-      padding: 1.5rem;
-      border-radius: 1rem;
+      padding: 1rem;
+      border-radius: 0.75rem;
     }
 
     button {
-      padding: 0.9rem;
-      font-size: 1rem;
+      padding: 0.7rem;
+      font-size: 0.95rem;
     }
 
     input.screen {
-      font-size: 2rem;
+      font-size: 1.6rem;
     }
   }
+</style>
 </style>
 
 </head>
