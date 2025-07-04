@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ultimate Futuristic Calculator</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --btn-bg: #1c222e;
+    --btn-hover: #293345;
+    --text: #e3e8ef;
+    --accent: #00ffc3;
+    --danger: #ff4d4d;
+    --warn: #f39c12;
+    --font: 'Segoe UI', 'Roboto', sans-serif;
+    --glow: 0 0 12px rgba(0, 255, 195, 0.5);
+  }
+
+  body.light {
+    --bg: #f4f6f8;
+    --btn-bg: #dee2e6;
+    --btn-hover: #cbd3db;
+    --text: #1c1c1c;
+    --accent: #007bff;
+    --danger: #e53935;
+    --warn: #ffc107;
+    --glow: none;
+  }
+
+  body.neon {
+    --bg: #0c0c2f;
+    --btn-bg: #191947;
+    --btn-hover: #2d2d73;
+    --text: #39ff14;
+    --accent: #ff00ff;
+    --danger: #ff073a;
+    --warn: #ffa502;
+    --glow: 0 0 15px rgba(255, 0, 255, 0.5);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 1rem;
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+
+  .calculator {
+    width: 100%;
+    max-width: 430px;
+    background: rgba(31, 39, 51, 0.8);
+    padding: 2rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    animation: fadeIn 0.6s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .tools {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.2rem;
+  }
+
+  .tools button {
+    background: var(--accent);
+    color: #000;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--glow);
+    transition: transform 0.2s ease, filter 0.2s ease;
+  }
+
+  .tools button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+  }
+
+  input.screen {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: var(--text);
+    font-size: 2.2rem;
+    text-align: right;
+    padding: 14px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    outline: none;
+  }
+
+  .preview {
+    text-align: right;
+    font-size: 0.95rem;
+    color: #aaa;
+    margin-bottom: 1rem;
+    min-height: 20px;
+  }
+
+  .memory, .advanced, .buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+
+  button {
+    padding: 1rem;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 12px;
+    background: var(--btn-bg);
+    color: var(--text);
+    font-weight: 500;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+
+  button:hover {
+    background: var(--btn-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  button:active {
+    transform: scale(0.96);
+  }
+
+  .equal {
+    background: var(--accent);
+    color: #000;
+    grid-column: span 2;
+    font-weight: bold;
+    box-shadow: var(--glow);
+  }
+
+  .clear {
+    background: var(--danger);
+    color: #fff;
+  }
+
+  .del {
+    background: var(--warn);
+    color: #fff;
+  }
+
+  .history {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: #ccc;
+    max-height: 100px;
+    overflow-y: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 0.5rem;
+  }
+
+  .history-entry {
+    margin-bottom: 6px;
+    font-style: italic;
+    opacity: 0.8;
+  }
+
+  @media (max-width: 500px) {
+    .calculator {
+      padding: 1.5rem;
+      border-radius: 1rem;
+    }
+
+    button {
+      padding: 0.9rem;
+      font-size: 1rem;
+    }
+
+    input.screen {
+      font-size: 2rem;
+    }
+  }
+</style>
+
+</head>
+<body class="glass">
+  <div class="calculator">
+    <div class="tools">
+      <button onclick="cycleTheme()">🎨 Theme</button>
+      <button onclick="clearHistory()">🗑 History</button>
+    </div>
+
+    <input type="text" id="display" class="screen" disabled />
+    <div class="preview" id="preview"></div>
+
+    <div class="memory">
+      <button onclick="memoryAdd()">M+</button>
+      <button onclick="memorySubtract()">M-</button>
+      <button onclick="memoryRecall()">MR</button>
+      <button onclick="memoryClear()">MC</button>
+    </div>
+
+    <div class="advanced">
+      <button onclick="appendValue('sin(')">sin</button>
+      <button onclick="appendValue('cos(')">cos</button>
+      <button onclick="appendValue('tan(')">tan</button>
+      <button onclick="appendValue('log(')">log</button>
+      <button onclick="appendValue('sqrt(')">√</button>
+      <button onclick="appendValue('^')">^</button>
+      <button onclick="appendValue('(')">(</button>
+      <button onclick="appendValue(')')">)</button>
+    </div>
+
+    <div class="buttons">
+      <button class="clear" onclick="clearDisplay()">C</button>
+      <button class="del" onclick="deleteLast()">⌫</button>
+      <button onclick="appendValue('/')">÷</button>
+      <button onclick="appendValue('*')">×</button>
+
+      <button onclick="appendValue('7')">7</button>
+      <button onclick="appendValue('8')">8</button>
+      <button onclick="appendValue('9')">9</button>
+      <button onclick="appendValue('-')">−</button>
+
+      <button onclick="appendValue('4')">4</button>
+      <button onclick="appendValue('5')">5</button>
+      <button onclick="appendValue('6')">6</button>
+      <button onclick="appendValue('+')">+</button>
+
+      <button onclick="appendValue('1')">1</button>
+      <button onclick="appendValue('2')">2</button>
+      <button onclick="appendValue('3')">3</button>
+      <button onclick="appendValue('.')">.</button>
+
+      <button onclick="appendValue('0')">0</button>
+      <button class="equal" onclick="calculateResult()">=</button>
+    </div>
+
+    <div class="history" id="history"></div>
+  </div>
+
+  <script>
+    const display = document.getElementById("display");
+    const preview = document.getElementById("preview");
+    const historyDiv = document.getElementById("history");
+
+    let memory = 0;
+    let themeIndex = 0;
+    const themes = ['glass', 'light', 'neon'];
+
+    function appendValue(val) {
+      display.value += val;
+      livePreview();
+    }
+
+    function clearDisplay() {
+      display.value = '';
+      preview.textContent = '';
+    }
+
+    function deleteLast() {
+      display.value = display.value.slice(0, -1);
+      livePreview();
+    }
+
+    function evaluateExpression(exp) {
+      exp = exp.replace(/÷/g, '/')
+               .replace(/×/g, '*')
+               .replace(/√/g, 'Math.sqrt')
+               .replace(/log/g, 'Math.log10')
+               .replace(/sin/g, 'Math.sin')
+               .replace(/cos/g, 'Math.cos')
+               .replace(/tan/g, 'Math.tan')
+               .replace(/\^/g, '**');
+      return Function('"use strict"; return (' + exp + ')')();
+    }
+
+    function calculateResult() {
+      try {
+        const result = evaluateExpression(display.value);
+        if (result !== undefined) {
+          addToHistory(display.value + ' = ' + result);
+          display.value = result;
+          preview.textContent = '';
+        }
+      } catch {
+        preview.textContent = "Invalid!";
+      }
+    }
+
+    function livePreview() {
+      try {
+        const result = evaluateExpression(display.value);
+        preview.textContent = isNaN(result) ? "" : "= " + result;
+      } catch {
+        preview.textContent = "";
+      }
+    }
+
+    function addToHistory(entry) {
+      const timestamp = new Date().toLocaleTimeString();
+      const div = document.createElement('div');
+      div.textContent = `[${timestamp}] ${entry}`;
+      div.className = "history-entry";
+      historyDiv.prepend(div);
+    }
+
+    function clearHistory() {
+      historyDiv.innerHTML = "";
+    }
+
+    function memoryAdd() {
+      memory += parseFloat(display.value || 0);
+    }
+
+    function memorySubtract() {
+      memory -= parseFloat(display.value || 0);
+    }
+
+    function memoryRecall() {
+      display.value += memory;
+      livePreview();
+    }
+
+    function memoryClear() {
+      memory = 0;
+    }
+
+    function cycleTheme() {
+      themeIndex = (themeIndex + 1) % themes.length;
+      document.body.className = themes[themeIndex];
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") calculateResult();
+      else if (e.key === "Backspace") deleteLast();
+      else if (e.key === "Escape") clearDisplay();
+      else if ("0123456789+-*/().".includes(e.key)) appendValue(e.key);
+    });
+  </script>
+</body>
+</html>
