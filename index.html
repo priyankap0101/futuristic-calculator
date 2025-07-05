@@ -41,13 +41,24 @@
 
     body.matrix {
       --bg: #010a01;
-      --btn-bg: linear-gradient(145deg, #003300, #001d00);
-      --btn-hover: linear-gradient(145deg, #005500, #002f00);
-      --text: #ffffff;
-      --accent: #00ff99;
-      --danger: #ff0022;
-      --warn: #ffff33;
-      --glow: 0 0 14px rgba(0, 255, 0, 0.6);
+      --btn-bg: linear-gradient(145deg, #003300, #001a00);
+      --btn-hover: linear-gradient(145deg, #00cc00, #006600);
+      --text: #ccffcc;
+      --accent: #00ff33;
+      --danger: #ff0033;
+      --warn: #ffee00;
+      --glow: 0 0 16px rgba(0,255,0,0.7);
+    }
+
+    body.sunburst {
+      --bg: #1b1400;
+      --btn-bg: linear-gradient(145deg, #4d3b00, #2a1f00);
+      --btn-hover: linear-gradient(145deg, #ffcc00, #cc9900);
+      --text: #fff5cc;
+      --accent: #ffdd33;
+      --danger: #ff4d00;
+      --warn: #ffe600;
+      --glow: 0 0 16px rgba(255,204,0,0.6);
     }
 
     body.cyber {
@@ -58,7 +69,7 @@
       --accent: #00ffe0;
       --danger: #ff0066;
       --warn: #ffff00;
-      --glow: 0 0 16px rgba(0, 255, 255, 0.5);
+      --glow: 0 0 16px rgba(0,255,255,0.5);
     }
 
     body.aurora {
@@ -69,7 +80,62 @@
       --accent: #f45fff;
       --danger: #ff4e88;
       --warn: #f0ff87;
-      --glow: 0 0 16px rgba(244, 95, 255, 0.5);
+      --glow: 0 0 16px rgba(244,95,255,0.5);
+    }
+
+    body.galaxy {
+      --bg: #0a0824;
+      --btn-bg: linear-gradient(145deg, #1f1b4d, #0f0c2f);
+      --btn-hover: linear-gradient(145deg, #3a2d7d, #1d1560);
+      --text: #d6d6ff;
+      --accent: #9370db;
+      --danger: #ff6f91;
+      --warn: #ffd93b;
+      --glow: 0 0 14px rgba(147,112,219,0.5);
+    }
+
+    body.frost {
+      --bg: #eaf4f8;
+      --btn-bg: linear-gradient(145deg, #d1e0e9, #c6d7de);
+      --btn-hover: linear-gradient(145deg, #b8d2e2, #a7c6d7);
+      --text: #1a1a1a;
+      --accent: #0077b6;
+      --danger: #e63946;
+      --warn: #ffba08;
+      --glow: 0 0 10px rgba(0,119,182,0.3);
+    }
+
+    body.verdant {
+      --bg: #0f1c0f;
+      --btn-bg: linear-gradient(145deg, #2a4d2a, #1e351e);
+      --btn-hover: linear-gradient(145deg, #3f8f3f, #2e6a2e);
+      --text: #e6ffe6;
+      --accent: #76ff03;
+      --danger: #cc2936;
+      --warn: #ffcc00;
+      --glow: 0 0 14px rgba(118,255,3,0.5);
+    }
+
+    body.tron {
+      --bg: #0c0f1a;
+      --btn-bg: linear-gradient(145deg, #1c1f33, #111425);
+      --btn-hover: linear-gradient(145deg, #20c997, #a100f2);
+      --text: #cafffb;
+      --accent: #00ffd5;
+      --danger: #ff2079;
+      --warn: #f7e733;
+      --glow: 0 0 18px rgba(0,255,213,0.7);
+    }
+
+    body.mystic {
+      --bg: #13001a;
+      --btn-bg: linear-gradient(145deg, #310033, #1e0024);
+      --btn-hover: linear-gradient(145deg, #730075, #4d004d);
+      --text: #f7e6ff;
+      --accent: #c300ff;
+      --danger: #ff3366;
+      --warn: #ffcc66;
+      --glow: 0 0 16px rgba(195,0,255,0.5);
     }
 
     body {
@@ -81,7 +147,7 @@
       align-items: center;
       min-height: 100vh;
       padding: 1.5rem;
-      transition: background 0.4s ease, color 0.4s ease;
+      transition: background 0.4s, color 0.4s;
     }
 
     .calculator {
@@ -90,16 +156,12 @@
       width: 100%;
       padding: 1.5rem 1.2rem 1.8rem;
       border-radius: 1rem;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
       backdrop-filter: blur(14px);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45), 0 0 20px var(--accent), inset 0 1px 6px rgba(255, 255, 255, 0.03);
-      animation: fadeIn 0.5s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      box-shadow: 0 12px 30px rgba(0,0,0,0.45),
+                  0 0 20px var(--accent),
+                  inset 0 1px 6px rgba(255,255,255,0.03);
     }
 
     .theme-toggle {
@@ -108,44 +170,36 @@
       right: 1rem;
     }
 
-
-select {
+    select {
   padding: 0.4rem 0.6rem;
   border-radius: 8px;
-  background: var(--btn-bg);
-  color: var(--text);
+  background: var(--btn-bg) !important;
+  color: var(--text) !important;
   border: none;
   font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 0 6px var(--accent);
+  transition: background 0.3s ease, color 0.3s ease;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  cursor: pointer;
-  box-shadow: 0 0 6px var(--accent);
-  transition: background 0.3s ease;
 }
 
 select:hover {
-  background: var(--btn-hover);
+  background: var(--btn-hover) !important;
   box-shadow: 0 0 10px var(--accent);
+  color: var(--text) !important;
 }
 
-/* Optional enhancement for Firefox and Chromium-based browsers */
 select option {
-  background: var(--bg);
+  background-color: var(--bg);
   color: var(--text);
+  border: none;
 }
-
-/* Not widely supported: option:hover doesn't work everywhere */
-select option:hover {
-  background: var(--btn-hover);
-  color: var(--accent);
-}
-
-
 
     input.screen {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.08);
+      width: 90%;
+      background: rgba(255,255,255,0.08);
       border: none;
       color: var(--text);
       font-size: 1.8rem;
@@ -154,14 +208,13 @@ select option:hover {
       border-radius: 10px;
       margin-top: 2.5rem;
       margin-bottom: 1rem;
-      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 5px var(--accent);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.5), 0 0 5px var(--accent);
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4,1fr);
       gap: 10px;
-      margin-top: 0.5rem;
     }
 
     button {
@@ -172,7 +225,9 @@ select option:hover {
       border: none;
       color: var(--text);
       background: var(--btn-bg);
-      box-shadow: inset 0 -2px 2px rgba(255,255,255,0.04), 0 6px 16px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
+      box-shadow: inset 0 -2px 2px rgba(255,255,255,0.04),
+                  0 6px 16px rgba(0,0,0,0.5),
+                  0 2px 4px rgba(0,0,0,0.3);
       cursor: pointer;
       transition: all 0.25s ease;
     }
@@ -190,51 +245,36 @@ select option:hover {
       background: var(--accent);
       color: #000;
       font-weight: 700;
-      box-shadow: var(--glow), 0 6px 12px rgba(0, 255, 195, 0.3);
+      box-shadow: var(--glow), 0 6px 12px rgba(0,255,225,0.3);
     }
 
-    .clear {
-      background: var(--danger);
-      color: #fff;
-    }
-
-    .del {
-      background: var(--warn);
-      color: #000;
-    }
+    .clear { background: var(--danger); color: #fff; }
+    .del { background: var(--warn); color: #000; }
 
     @media (max-width: 400px) {
-      .calculator {
-        padding: 1rem 1rem 1.5rem;
-      }
-
-      input.screen {
-        font-size: 1.5rem;
-        padding: 10px;
-        margin-top: 2.5rem;
-      }
-
-      button {
-        font-size: 0.8rem;
-        padding: 0.65rem;
-      }
-
-      select {
-        font-size: 0.75rem;
-      }
+      .calculator { padding: 1rem; }
+      input.screen { font-size: 1.5rem; }
+      button { font-size: 0.8rem; padding: 0.65rem; }
+      select { font-size: 0.75rem; }
     }
   </style>
 </head>
-<body class="dark">
+<body>
   <div class="calculator">
     <div class="theme-toggle">
-      <select onchange="changeTheme(this.value)">
-        <option value="">Dark</option>
+      <select id="themeSelect" onchange="changeTheme(this.value)">
+        <option value="dark">Dark</option>
         <option value="light">Light</option>
         <option value="neon">Neon</option>
         <option value="matrix">Matrix</option>
+        <option value="sunburst">Sunburst</option>
         <option value="cyber">Cyber</option>
         <option value="aurora">Aurora</option>
+        <option value="galaxy">Galaxy</option>
+        <option value="frost">Frost</option>
+        <option value="verdant">Verdant</option>
+        <option value="tron">Tron</option>
+        <option value="mystic">Mystic</option>
       </select>
     </div>
     <input class="screen" id="screen" readonly />
@@ -243,22 +283,18 @@ select option:hover {
       <button onclick="append('8')">8</button>
       <button onclick="append('9')">9</button>
       <button class="del" onclick="del()">DEL</button>
-
       <button onclick="append('4')">4</button>
       <button onclick="append('5')">5</button>
       <button onclick="append('6')">6</button>
       <button onclick="append('+')">+</button>
-
       <button onclick="append('1')">1</button>
       <button onclick="append('2')">2</button>
       <button onclick="append('3')">3</button>
       <button onclick="append('-')">-</button>
-
       <button onclick="append('0')">0</button>
       <button onclick="append('.')">.</button>
       <button onclick="append('*')">*</button>
       <button onclick="append('/')">/</button>
-
       <button class="clear" onclick="clearScreen()">C</button>
       <button class="equal" style="grid-column: span 3" onclick="calculate()">=</button>
     </div>
@@ -266,6 +302,7 @@ select option:hover {
 
   <script>
     const screen = document.getElementById('screen');
+    const themeSelect = document.getElementById('themeSelect');
 
     function append(char) {
       screen.value += char;
@@ -282,21 +319,23 @@ select option:hover {
     function calculate() {
       try {
         screen.value = eval(screen.value);
-      } catch (e) {
+      } catch {
         screen.value = 'Error';
       }
     }
 
     function changeTheme(theme) {
-  document.body.className = theme;
+      document.body.className = theme;
+      localStorage.setItem('theme', theme);
+      themeSelect.value = theme;
+    }
 
-  // Workaround for some browsers to re-render select styling
-  const select = document.querySelector("select");
-  const parent = select.parentElement;
-  parent.removeChild(select);
-  parent.appendChild(select);
-}
-
+    // Load theme on startup
+    window.onload = () => {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.body.className = savedTheme;
+      themeSelect.value = savedTheme;
+    };
   </script>
 </body>
 </html>
