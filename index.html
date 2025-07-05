@@ -3,363 +3,267 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Futuristic Calculator</title>
+  <title>3D Futuristic Calculator</title>
   <style>
-:root {
-  --bg: #0f111a;
-  --btn-bg: linear-gradient(145deg, #1e2233, #111520);
-  --btn-hover: linear-gradient(145deg, #2e3650, #1c202f);
-  --text: #e5e9f0;
-  --accent: #00ffcc;
-  --danger: #ff4d4d;
-  --warn: #ffb347;
-  --glow: 0 0 12px rgba(0, 255, 195, 0.5);
-  --font: 'Segoe UI', 'Roboto', sans-serif;
-}
+    :root {
+      --bg: #0e0f1a;
+      --btn-bg: linear-gradient(145deg, #1f2333, #111420);
+      --btn-hover: linear-gradient(145deg, #2a2f4a, #161a30);
+      --text: #e5e9f0;
+      --accent: #00ffe1;
+      --danger: #ff4d6d;
+      --warn: #ffc94d;
+      --glow: 0 0 12px rgba(0, 255, 225, 0.6);
+      --font: 'Segoe UI', 'Roboto', sans-serif;
+    }
 
-body.light {
-  --bg: #f1f4f8;
-  --btn-bg: linear-gradient(145deg, #e1e5ea, #cfd6db);
-  --btn-hover: linear-gradient(145deg, #d3d8df, #bfc5cc);
-  --text: #212529;
-  --accent: #007bff;
-  --danger: #dc3545;
-  --warn: #ffc107;
-  --glow: none;
-}
+    body.light {
+      --bg: #f3f6fa;
+      --btn-bg: linear-gradient(145deg, #e6ebf1, #dce2e9);
+      --btn-hover: linear-gradient(145deg, #d2d8e0, #c6ccd4);
+      --text: #1a1a1a;
+      --accent: #007bff;
+      --danger: #dc3545;
+      --warn: #ffc107;
+      --glow: none;
+    }
 
-body.neon {
-  --bg: #090926;
-  --btn-bg: linear-gradient(145deg, #1b1b60, #121241);
-  --btn-hover: linear-gradient(145deg, #2d2da3, #19194d);
-  --text: #39ff14;
-  --accent: #ff00ff;
-  --danger: #ff073a;
-  --warn: #ffa502;
-  --glow: 0 0 16px rgba(255, 0, 255, 0.5);
-}
+    body.neon {
+      --bg: #0a0020;
+      --btn-bg: linear-gradient(145deg, #4d0066, #220033);
+      --btn-hover: linear-gradient(145deg, #9900cc, #440066);
+      --text: #39ff14;
+      --accent: #ff00f7;
+      --danger: #ff204e;
+      --warn: #ffac00;
+      --glow: 0 0 18px rgba(255, 0, 247, 0.6);
+    }
 
-body.matrix {
-  --bg: #000;
-  --btn-bg: linear-gradient(145deg, #001f00, #001400);
-  --btn-hover: linear-gradient(145deg, #004000, #002d00);
-  --text: #00ff00;
-  --accent: #00ff00;
-  --danger: #ff0000;
-  --warn: #ffff00;
-  --glow: 0 0 14px #00ff00aa;
-}
+    body.matrix {
+      --bg: #010a01;
+      --btn-bg: linear-gradient(145deg, #003300, #001d00);
+      --btn-hover: linear-gradient(145deg, #005500, #002f00);
+      --text: #00ff00;
+      --accent: #00ff99;
+      --danger: #ff0022;
+      --warn: #ffff33;
+      --glow: 0 0 14px rgba(0, 255, 0, 0.6);
+    }
 
-body.cyber {
-  --bg: #0a0a1a;
-  --btn-bg: linear-gradient(145deg, #202040, #151536);
-  --btn-hover: linear-gradient(145deg, #353575, #202050);
-  --text: #0ff;
-  --accent: #0ff;
-  --danger: #f00;
-  --warn: #ff0;
-  --glow: 0 0 15px #0ff8;
-}
+    body.cyber {
+      --bg: #0b0d1a;
+      --btn-bg: linear-gradient(145deg, #1a1d3a, #0d0f25);
+      --btn-hover: linear-gradient(145deg, #353a75, #1e214c);
+      --text: #0fffff;
+      --accent: #00ffe0;
+      --danger: #ff0066;
+      --warn: #ffff00;
+      --glow: 0 0 16px rgba(0, 255, 255, 0.5);
+    }
 
-body.aurora {
-  --bg: #1b1b2f;
-  --btn-bg: linear-gradient(145deg, #3a3a5f, #292948);
-  --btn-hover: linear-gradient(145deg, #515180, #393963);
-  --text: #f1f1f1;
-  --accent: #ff79c6;
-  --danger: #ff5555;
-  --warn: #f1fa8c;
-  --glow: 0 0 14px #ff79c6aa;
-}
+    body.aurora {
+      --bg: #1a1b2c;
+      --btn-bg: linear-gradient(145deg, #393c5e, #292a4a);
+      --btn-hover: linear-gradient(145deg, #6a6cb0, #3d3f6e);
+      --text: #fefefe;
+      --accent: #f45fff;
+      --danger: #ff4e88;
+      --warn: #f0ff87;
+      --glow: 0 0 16px rgba(244, 95, 255, 0.5);
+    }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 1rem;
-  transition: background 0.4s ease, color 0.4s ease;
-}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
 
-.calculator {
-  max-width: 360px;
-  width: 100%;
-  padding: 1.2rem;
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(14px);
-  box-shadow:
-    0 12px 30px rgba(0, 0, 0, 0.45),
-    inset 0 1px 6px rgba(255, 255, 255, 0.03);
-  animation: fadeIn 0.5s ease-in-out;
-}
+    .calculator {
+      position: relative;
+      max-width: 360px;
+      width: 100%;
+      padding: 1.5rem 1.2rem 1.8rem;
+      border-radius: 1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45), 0 0 20px var(--accent), inset 0 1px 6px rgba(255, 255, 255, 0.03);
+      animation: fadeIn 0.5s ease-in-out;
+    }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-input.screen {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.08);
-  border: none;
-  color: var(--text);
-  font-size: 1.8rem;
-  padding: 12px;
-  text-align: right;
-  border-radius: 10px;
-  margin-bottom: 0.5rem;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5),
-              0 0 5px var(--accent);
-}
+    .theme-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
 
-.preview {
-  text-align: right;
-  font-size: 0.8rem;
-  color: #aaa;
-  min-height: 18px;
-  margin-bottom: 0.75rem;
-}
+    select {
+      padding: 0.4rem 0.6rem;
+      border-radius: 8px;
+      background: var(--btn-bg);
+      color: var(--text);
+      border: none;
+      font-size: 0.85rem;
+    }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-}
+    input.screen {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: var(--text);
+      font-size: 1.8rem;
+      padding: 12px;
+      text-align: right;
+      border-radius: 10px;
+      margin-top: 2.5rem;
+      margin-bottom: 1rem;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 5px var(--accent);
+    }
 
-button {
-  padding: 0.75rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 10px;
-  border: none;
-  color: var(--text);
-  background: var(--btn-bg);
-  box-shadow:
-    inset 0 -2px 2px rgba(255,255,255,0.04),
-    0 6px 16px rgba(0,0,0,0.5),
-    0 2px 4px rgba(0,0,0,0.3);
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 0.5rem;
+    }
 
-button:hover {
-  background: var(--btn-hover);
-  transform: translateY(-2px);
-  box-shadow:
-    0 10px 20px rgba(0, 255, 195, 0.2),
-    0 4px 6px rgba(0, 0, 0, 0.25);
-}
+    button {
+      padding: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 10px;
+      border: none;
+      color: var(--text);
+      background: var(--btn-bg);
+      box-shadow: inset 0 -2px 2px rgba(255,255,255,0.04), 0 6px 16px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
 
-button:active {
-  transform: scale(0.95);
-  box-shadow: inset 0 3px 6px rgba(0,0,0,0.4);
-}
+    button:hover {
+      background: var(--btn-hover);
+      transform: translateY(-2px);
+    }
 
-.equal {
-  background: var(--accent);
-  color: #000;
-  font-weight: 700;
-  box-shadow: var(--glow), 0 6px 12px rgba(0, 255, 195, 0.3);
-}
+    button:active {
+      transform: scale(0.95);
+    }
 
-.clear {
-  background: var(--danger);
-  color: #fff;
-}
+    .equal {
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      box-shadow: var(--glow), 0 6px 12px rgba(0, 255, 195, 0.3);
+    }
 
-.del {
-  background: var(--warn);
-  color: #000;
-}
+    .clear {
+      background: var(--danger);
+      color: #fff;
+    }
 
-.history {
-  font-size: 0.75rem;
-  max-height: 100px;
-  overflow-y: auto;
-  color: #aaa;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding-top: 0.6rem;
-  margin-top: 0.6rem;
-}
+    .del {
+      background: var(--warn);
+      color: #000;
+    }
 
-.history-entry {
-  margin-bottom: 4px;
-  opacity: 0.75;
-  font-style: italic;
-}
+    @media (max-width: 400px) {
+      .calculator {
+        padding: 1rem 1rem 1.5rem;
+      }
 
-@media (max-width: 400px) {
-  .calculator {
-    max-width: 300px;
-    padding: 1rem;
-  }
+      input.screen {
+        font-size: 1.5rem;
+        padding: 10px;
+        margin-top: 2.5rem;
+      }
 
-  button {
-    padding: 0.65rem;
-    font-size: 0.82rem;
-  }
+      button {
+        font-size: 0.8rem;
+        padding: 0.65rem;
+      }
 
-  input.screen {
-    font-size: 1.5rem;
-    padding: 10px;
-  }
-}
-
-
+      select {
+        font-size: 0.75rem;
+      }
+    }
   </style>
 </head>
-<body class="glass">
+<body class="dark">
   <div class="calculator">
-    <input type="text" id="display" class="screen" disabled />
-    <div class="preview" id="preview"></div>
-
-    <div class="grid">
-      <button onclick="clearDisplay()" class="clear">C</button>
-      <button onclick="deleteLast()" class="del">⌫</button>
-      <button onclick="cycleTheme()">🎨</button>
-      <button onclick="clearHistory()">🗑</button>
-
-      <button onclick="appendValue('M+')">M+</button>
-      <button onclick="appendValue('M-')">M-</button>
-      <button onclick="memoryRecall()">MR</button>
-      <button onclick="memoryClear()">MC</button>
-
-      <button onclick="appendValue('sin(')">sin</button>
-      <button onclick="appendValue('cos(')">cos</button>
-      <button onclick="appendValue('tan(')">tan</button>
-      <button onclick="appendValue('log(')">log</button>
-
-      <button onclick="appendValue('sqrt(')">√</button>
-      <button onclick="appendValue('^')">^</button>
-      <button onclick="appendValue('(')">(</button>
-      <button onclick="appendValue(')')">)</button>
-
-      <button onclick="appendValue('7')">7</button>
-      <button onclick="appendValue('8')">8</button>
-      <button onclick="appendValue('9')">9</button>
-      <button onclick="appendValue('/')">÷</button>
-
-      <button onclick="appendValue('4')">4</button>
-      <button onclick="appendValue('5')">5</button>
-      <button onclick="appendValue('6')">6</button>
-      <button onclick="appendValue('*')">×</button>
-
-      <button onclick="appendValue('1')">1</button>
-      <button onclick="appendValue('2')">2</button>
-      <button onclick="appendValue('3')">3</button>
-      <button onclick="appendValue('-')">−</button>
-
-      <button onclick="appendValue('0')">0</button>
-      <button onclick="appendValue('.')">.</button>
-      <button onclick="appendValue('+')">+</button>
-      <button class="equal" onclick="calculateResult()">=</button>
+    <div class="theme-toggle">
+      <select onchange="changeTheme(this.value)">
+        <option value="">Dark</option>
+        <option value="light">Light</option>
+        <option value="neon">Neon</option>
+        <option value="matrix">Matrix</option>
+        <option value="cyber">Cyber</option>
+        <option value="aurora">Aurora</option>
+      </select>
     </div>
+    <input class="screen" id="screen" readonly />
+    <div class="grid">
+      <button onclick="append('7')">7</button>
+      <button onclick="append('8')">8</button>
+      <button onclick="append('9')">9</button>
+      <button class="del" onclick="del()">DEL</button>
 
-    <div class="history" id="history"></div>
+      <button onclick="append('4')">4</button>
+      <button onclick="append('5')">5</button>
+      <button onclick="append('6')">6</button>
+      <button onclick="append('+')">+</button>
+
+      <button onclick="append('1')">1</button>
+      <button onclick="append('2')">2</button>
+      <button onclick="append('3')">3</button>
+      <button onclick="append('-')">-</button>
+
+      <button onclick="append('0')">0</button>
+      <button onclick="append('.')">.</button>
+      <button onclick="append('*')">*</button>
+      <button onclick="append('/')">/</button>
+
+      <button class="clear" onclick="clearScreen()">C</button>
+      <button class="equal" style="grid-column: span 3" onclick="calculate()">=</button>
+    </div>
   </div>
 
   <script>
-    const display = document.getElementById("display");
-    const preview = document.getElementById("preview");
-    const historyDiv = document.getElementById("history");
-    let memory = 0;
-    let themeIndex = 0;
-    const themes = ['glass', 'light', 'neon', 'matrix', 'cyber'];
+    const screen = document.getElementById('screen');
 
-    function appendValue(val) {
-      display.value += val;
-      livePreview();
+    function append(char) {
+      screen.value += char;
     }
 
-    function clearDisplay() {
-      display.value = '';
-      preview.textContent = '';
+    function clearScreen() {
+      screen.value = '';
     }
 
-    function deleteLast() {
-      display.value = display.value.slice(0, -1);
-      livePreview();
+    function del() {
+      screen.value = screen.value.slice(0, -1);
     }
 
-    function evaluateExpression(exp) {
-      exp = exp.replace(/÷/g, '/')
-               .replace(/×/g, '*')
-               .replace(/√/g, 'Math.sqrt')
-               .replace(/log/g, 'Math.log10')
-               .replace(/sin/g, 'Math.sin')
-               .replace(/cos/g, 'Math.cos')
-               .replace(/tan/g, 'Math.tan')
-               .replace(/\^/g, '**');
-      return Function('"use strict"; return (' + exp + ')')();
-    }
-
-    function calculateResult() {
+    function calculate() {
       try {
-        const result = evaluateExpression(display.value);
-        if (result !== undefined) {
-          addToHistory(display.value + ' = ' + result);
-          display.value = result;
-          preview.textContent = '';
-        }
-      } catch {
-        preview.textContent = "Invalid!";
+        screen.value = eval(screen.value);
+      } catch (e) {
+        screen.value = 'Error';
       }
     }
 
-    function livePreview() {
-      try {
-        const result = evaluateExpression(display.value);
-        preview.textContent = isNaN(result) ? "" : "= " + result;
-      } catch {
-        preview.textContent = "";
-      }
+    function changeTheme(theme) {
+      document.body.className = theme;
     }
-
-    function addToHistory(entry) {
-      const timestamp = new Date().toLocaleTimeString();
-      const div = document.createElement('div');
-      div.textContent = `[${timestamp}] ${entry}`;
-      div.className = "history-entry";
-      historyDiv.prepend(div);
-    }
-
-    function clearHistory() {
-      historyDiv.innerHTML = "";
-    }
-
-    function memoryAdd() {
-      memory += parseFloat(display.value || 0);
-    }
-
-    function memorySubtract() {
-      memory -= parseFloat(display.value || 0);
-    }
-
-    function memoryRecall() {
-      display.value += memory;
-      livePreview();
-    }
-
-    function memoryClear() {
-      memory = 0;
-    }
-
-    function cycleTheme() {
-      themeIndex = (themeIndex + 1) % themes.length;
-      document.body.className = themes[themeIndex];
-    }
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") calculateResult();
-      else if (e.key === "Backspace") deleteLast();
-      else if (e.key === "Escape") clearDisplay();
-      else if ("0123456789+-*/().".includes(e.key)) appendValue(e.key);
-    });
   </script>
 </body>
 </html>
