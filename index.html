@@ -32,7 +32,7 @@
       --bg: #0a0020;
       --btn-bg: linear-gradient(145deg, #4d0066, #220033);
       --btn-hover: linear-gradient(145deg, #9900cc, #440066);
-      --text: #39ff14;
+      --text: #ffffff;
       --accent: #ff00f7;
       --danger: #ff204e;
       --warn: #ffac00;
@@ -43,7 +43,7 @@
       --bg: #010a01;
       --btn-bg: linear-gradient(145deg, #003300, #001d00);
       --btn-hover: linear-gradient(145deg, #005500, #002f00);
-      --text: #00ff00;
+      --text: #ffffff;
       --accent: #00ff99;
       --danger: #ff0022;
       --warn: #ffff33;
@@ -108,14 +108,40 @@
       right: 1rem;
     }
 
-    select {
-      padding: 0.4rem 0.6rem;
-      border-radius: 8px;
-      background: var(--btn-bg);
-      color: var(--text);
-      border: none;
-      font-size: 0.85rem;
-    }
+
+select {
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  background: var(--btn-bg);
+  color: var(--text);
+  border: none;
+  font-size: 0.85rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  box-shadow: 0 0 6px var(--accent);
+  transition: background 0.3s ease;
+}
+
+select:hover {
+  background: var(--btn-hover);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+/* Optional enhancement for Firefox and Chromium-based browsers */
+select option {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Not widely supported: option:hover doesn't work everywhere */
+select option:hover {
+  background: var(--btn-hover);
+  color: var(--accent);
+}
+
+
 
     input.screen {
       width: 100%;
@@ -262,8 +288,15 @@
     }
 
     function changeTheme(theme) {
-      document.body.className = theme;
-    }
+  document.body.className = theme;
+
+  // Workaround for some browsers to re-render select styling
+  const select = document.querySelector("select");
+  const parent = select.parentElement;
+  parent.removeChild(select);
+  parent.appendChild(select);
+}
+
   </script>
 </body>
 </html>
