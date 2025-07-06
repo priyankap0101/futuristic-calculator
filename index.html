@@ -5,139 +5,123 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>3D Futuristic Calculator</title>
   <style>
+    /* ————————— Root & Themes ————————— */
     :root {
-      --bg: #0e0f1a;
-      --btn-bg: linear-gradient(145deg, #1f2333, #111420);
-      --btn-hover: linear-gradient(145deg, #2a2f4a, #161a30);
-      --text: #e5e9f0;
-      --accent: #00ffe1;
-      --danger: #ff4d6d;
-      --warn: #ffc94d;
-      --glow: 0 0 12px rgba(0, 255, 225, 0.6);
       --font: 'Segoe UI', 'Roboto', sans-serif;
     }
-
+    body.dark { /* default dark theme */ }
     body.light {
-      --bg: #f3f6fa;
-      --btn-bg: linear-gradient(145deg, #e6ebf1, #dce2e9);
-      --btn-hover: linear-gradient(145deg, #d2d8e0, #c6ccd4);
+      --bg: #ffffff;
+      --btn-bg: linear-gradient(145deg,#ffffff,#dce2e9);
+      --btn-hover: linear-gradient(145deg,#d2d8e0,#c6ccd4);
       --text: #1a1a1a;
       --accent: #007bff;
       --danger: #dc3545;
       --warn: #ffc107;
       --glow: none;
     }
-
     body.neon {
       --bg: #0a0020;
-      --btn-bg: linear-gradient(145deg, #4d0066, #220033);
-      --btn-hover: linear-gradient(145deg, #9900cc, #440066);
+      --btn-bg: linear-gradient(145deg,#4d0066,#220033);
+      --btn-hover: linear-gradient(145deg,#9900cc,#440066);
       --text: #ffffff;
       --accent: #ff00f7;
       --danger: #ff204e;
       --warn: #ffac00;
-      --glow: 0 0 18px rgba(255, 0, 247, 0.6);
+      --glow: 0 0 18px rgba(255,0,247,0.6);
     }
-
     body.matrix {
       --bg: #010a01;
-      --btn-bg: linear-gradient(145deg, #003300, #001a00);
-      --btn-hover: linear-gradient(145deg, #00cc00, #006600);
+      --btn-bg: linear-gradient(145deg,#003300,#001a00);
+      --btn-hover: linear-gradient(145deg,#00cc00,#006600);
       --text: #ccffcc;
       --accent: #00ff33;
       --danger: #ff0033;
       --warn: #ffee00;
       --glow: 0 0 16px rgba(0,255,0,0.7);
     }
-
     body.sunburst {
       --bg: #1b1400;
-      --btn-bg: linear-gradient(145deg, #4d3b00, #2a1f00);
-      --btn-hover: linear-gradient(145deg, #ffcc00, #cc9900);
+      --btn-bg: linear-gradient(145deg,#4d3b00,#2a1f00);
+      --btn-hover: linear-gradient(145deg,#ffcc00,#cc9900);
       --text: #fff5cc;
       --accent: #ffdd33;
       --danger: #ff4d00;
       --warn: #ffe600;
       --glow: 0 0 16px rgba(255,204,0,0.6);
     }
-
     body.cyber {
       --bg: #0b0d1a;
-      --btn-bg: linear-gradient(145deg, #1a1d3a, #0d0f25);
-      --btn-hover: linear-gradient(145deg, #353a75, #1e214c);
+      --btn-bg: linear-gradient(145deg,#1a1d3a,#0d0f25);
+      --btn-hover: linear-gradient(145deg,#353a75,#1e214c);
       --text: #0fffff;
       --accent: #00ffe0;
       --danger: #ff0066;
       --warn: #ffff00;
       --glow: 0 0 16px rgba(0,255,255,0.5);
     }
-
     body.aurora {
       --bg: #1a1b2c;
-      --btn-bg: linear-gradient(145deg, #393c5e, #292a4a);
-      --btn-hover: linear-gradient(145deg, #6a6cb0, #3d3f6e);
+      --btn-bg: linear-gradient(145deg,#393c5e,#292a4a);
+      --btn-hover: linear-gradient(145deg,#6a6cb0,#3d3f6e);
       --text: #fefefe;
       --accent: #f45fff;
       --danger: #ff4e88;
       --warn: #f0ff87;
       --glow: 0 0 16px rgba(244,95,255,0.5);
     }
-
     body.galaxy {
       --bg: #0a0824;
-      --btn-bg: linear-gradient(145deg, #1f1b4d, #0f0c2f);
-      --btn-hover: linear-gradient(145deg, #3a2d7d, #1d1560);
+      --btn-bg: linear-gradient(145deg,#1f1b4d,#0f0c2f);
+      --btn-hover: linear-gradient(145deg,#3a2d7d,#1d1560);
       --text: #d6d6ff;
       --accent: #9370db;
       --danger: #ff6f91;
       --warn: #ffd93b;
       --glow: 0 0 14px rgba(147,112,219,0.5);
     }
-
     body.frost {
       --bg: #eaf4f8;
-      --btn-bg: linear-gradient(145deg, #d1e0e9, #c6d7de);
-      --btn-hover: linear-gradient(145deg, #b8d2e2, #a7c6d7);
+      --btn-bg: linear-gradient(145deg,#d1e0e9,#c6d7de);
+      --btn-hover: linear-gradient(145deg,#b8d2e2,#a7c6d7);
       --text: #1a1a1a;
       --accent: #0077b6;
       --danger: #e63946;
       --warn: #ffba08;
       --glow: 0 0 10px rgba(0,119,182,0.3);
     }
-
     body.verdant {
       --bg: #0f1c0f;
-      --btn-bg: linear-gradient(145deg, #2a4d2a, #1e351e);
-      --btn-hover: linear-gradient(145deg, #3f8f3f, #2e6a2e);
+      --btn-bg: linear-gradient(145deg,#2a4d2a,#1e351e);
+      --btn-hover: linear-gradient(145deg,#3f8f3f,#2e6a2e);
       --text: #e6ffe6;
       --accent: #76ff03;
       --danger: #cc2936;
       --warn: #ffcc00;
       --glow: 0 0 14px rgba(118,255,3,0.5);
     }
-
     body.tron {
       --bg: #0c0f1a;
-      --btn-bg: linear-gradient(145deg, #1c1f33, #111425);
-      --btn-hover: linear-gradient(145deg, #20c997, #a100f2);
+      --btn-bg: linear-gradient(145deg,#1c1f33,#111425);
+      --btn-hover: linear-gradient(145deg,#20c997,#a100f2);
       --text: #cafffb;
       --accent: #00ffd5;
       --danger: #ff2079;
       --warn: #f7e733;
       --glow: 0 0 18px rgba(0,255,213,0.7);
     }
-
     body.mystic {
       --bg: #13001a;
-      --btn-bg: linear-gradient(145deg, #310033, #1e0024);
-      --btn-hover: linear-gradient(145deg, #730075, #4d004d);
+      --btn-bg: linear-gradient(145deg,#310033,#1e0024);
+      --btn-hover: linear-gradient(145deg,#730075,#4d004d);
       --text: #f7e6ff;
       --accent: #c300ff;
       --danger: #ff3366;
       --warn: #ffcc66;
       --glow: 0 0 16px rgba(195,0,255,0.5);
     }
-
+    
+    /* ————————— Shared Styles for all themes ————————— */
     body {
       background: var(--bg);
       color: var(--text);
@@ -147,56 +131,47 @@
       align-items: center;
       min-height: 100vh;
       padding: 1.5rem;
-      transition: background 0.4s, color 0.4s;
+      transition: background 0.4s ease, color 0.4s ease;
     }
-
     .calculator {
       position: relative;
       max-width: 360px;
       width: 100%;
-      padding: 1.5rem 1.2rem 1.8rem;
+      padding: 1.5rem 1.2rem 2rem;
       border-radius: 1rem;
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.08);
       backdrop-filter: blur(14px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.45),
-                  0 0 20px var(--accent),
-                  inset 0 1px 6px rgba(255,255,255,0.03);
+      box-shadow:
+        0 12px 30px rgba(0,0,0,0.45),
+        0 0 7px var(--accent),
+        inset 0 1px 6px rgba(255,255,255,0.03);
     }
-
     .theme-toggle {
       position: absolute;
       top: 1rem;
       right: 1rem;
     }
-
     select {
-  padding: 0.4rem 0.6rem;
-  border-radius: 8px;
-  background: var(--btn-bg) !important;
-  color: var(--text) !important;
-  border: none;
-  font-size: 0.85rem;
-  cursor: pointer;
-  box-shadow: 0 0 6px var(--accent);
-  transition: background 0.3s ease, color 0.3s ease;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
-select:hover {
-  background: var(--btn-hover) !important;
-  box-shadow: 0 0 10px var(--accent);
-  color: var(--text) !important;
-}
-
-select option {
-  background-color: var(--bg);
-  color: var(--text);
-  border: none;
-}
-
+      padding: 0.4rem 0.6rem;
+      border-radius: 8px;
+      background: var(--btn-bg);
+      color: var(--text);
+      border: none;
+      font-size: 0.85rem;
+      cursor: pointer;
+      box-shadow: 0 0 6px var(--accent);
+      transition: background 0.3s ease, color 0.3s ease;
+      appearance: none;
+    }
+    select:hover {
+      background: var(--btn-hover);
+      box-shadow: 0 0 10px var(--accent);
+    }
+    select option {
+      background-color: var(--bg);
+      color: var(--text);
+    }
     input.screen {
       width: 90%;
       background: rgba(255,255,255,0.08);
@@ -208,15 +183,16 @@ select option {
       border-radius: 10px;
       margin-top: 2.5rem;
       margin-bottom: 1rem;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.5), 0 0 5px var(--accent);
+      box-shadow:
+        inset 0 2px 6px rgba(0,0,0,0.5),
+        0 0 5px var(--accent);
     }
-
     .grid {
       display: grid;
       grid-template-columns: repeat(4,1fr);
       gap: 10px;
+      margin-bottom: 1rem;
     }
-
     button {
       padding: 0.75rem;
       font-size: 0.9rem;
@@ -225,37 +201,51 @@ select option {
       border: none;
       color: var(--text);
       background: var(--btn-bg);
-      box-shadow: inset 0 -2px 2px rgba(255,255,255,0.04),
-                  0 6px 16px rgba(0,0,0,0.5),
-                  0 2px 4px rgba(0,0,0,0.3);
+      box-shadow:
+        inset 0 -2px 2px rgba(255,255,255,0.04),
+        0 6px 16px rgba(0,0,0,0.5),
+        0 2px 4px rgba(0,0,0,0.3);
       cursor: pointer;
       transition: all 0.25s ease;
     }
-
     button:hover {
       background: var(--btn-hover);
       transform: translateY(-2px);
     }
-
     button:active {
       transform: scale(0.95);
     }
-
     .equal {
       background: var(--accent);
       color: #000;
       font-weight: 700;
       box-shadow: var(--glow), 0 6px 12px rgba(0,255,225,0.3);
     }
-
-    .clear { background: var(--danger); color: #fff; }
-    .del { background: var(--warn); color: #000; }
-
-    @media (max-width: 400px) {
-      .calculator { padding: 1rem; }
-      input.screen { font-size: 1.5rem; }
-      button { font-size: 0.8rem; padding: 0.65rem; }
-      select { font-size: 0.75rem; }
+    .clear { background: var(--danger); }
+    .del { background: var(--warn); }
+    #controls { text-align: right; margin-bottom: 5px; }
+    #controls button {
+      margin: 0 4px;
+      font-size: 0.85rem;
+      padding: 0.5rem;
+    }
+    #history div, #favorites button {
+      background: var(--btn-bg);
+      color: var(--text);
+      border: none;
+      margin: 2px 0;
+      padding: 0.4rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      text-align: left;
+      box-shadow:
+        inset 0 -1px 1px rgba(255,255,255,0.04),
+        0 2px 5px rgba(0,0,0,0.3);
+      transition: background 0.2s;
+    }
+    #history div:hover, #favorites button:hover {
+      background: var(--btn-hover);
     }
   </style>
 </head>
@@ -278,6 +268,11 @@ select option {
       </select>
     </div>
     <input class="screen" id="screen" readonly />
+    <div id="controls">
+      <button onclick="copyResult()">📋 Copy</button>
+      <button id="bracketBtn" onclick="append('(')">(</button>
+      <button onclick="startVoice()">🎤</button>
+    </div>
     <div class="grid">
       <button onclick="append('7')">7</button>
       <button onclick="append('8')">8</button>
@@ -298,43 +293,103 @@ select option {
       <button class="clear" onclick="clearScreen()">C</button>
       <button class="equal" style="grid-column: span 3" onclick="calculate()">=</button>
     </div>
+    <div id="favorites">
+      <button onclick="saveFavorite()">⭐ Save Favorite</button>
+    </div>
+    <div id="history"></div>
   </div>
 
   <script>
     const screen = document.getElementById('screen');
     const themeSelect = document.getElementById('themeSelect');
+    let historyArr = [];
 
-    function append(char) {
-      screen.value += char;
-    }
-
-    function clearScreen() {
-      screen.value = '';
-    }
-
-    function del() {
-      screen.value = screen.value.slice(0, -1);
-    }
+    function append(ch) { screen.value += ch; checkBalance(); }
+    function del() { screen.value = screen.value.slice(0, -1); checkBalance(); }
+    function clearScreen() { screen.value = ''; checkBalance(); }
 
     function calculate() {
       try {
-        screen.value = eval(screen.value);
+        let res = eval(screen.value);
+        historyArr.push(`${screen.value} = ${res}`);
+        if (historyArr.length > 10) historyArr.shift();
+        updateHistory();
+        screen.value = res;
       } catch {
         screen.value = 'Error';
       }
+      checkBalance();
     }
 
-    function changeTheme(theme) {
-      document.body.className = theme;
-      localStorage.setItem('theme', theme);
-      themeSelect.value = theme;
+    function updateHistory() {
+      const h = document.getElementById('history');
+      h.innerHTML = '';
+      historyArr.slice().reverse().forEach(e => {
+        const d = document.createElement('div');
+        d.textContent = e;
+        d.onclick = () => screen.value = e.split('=')[0].trim();
+        h.appendChild(d);
+      });
     }
 
-    // Load theme on startup
+    function copyResult() {
+      navigator.clipboard.writeText(screen.value).then(() => alert('Copied!'));
+    }
+
+    function checkBalance() {
+      let bal = 0;
+      for (let c of screen.value) {
+        if (c === '(') bal++;
+        else if (c === ')') bal--;
+      }
+      document.getElementById('bracketBtn').style.backgroundColor =
+        bal !== 0 ? 'var(--danger)' : '';
+    }
+
+    function saveFavorite() {
+      let favs = JSON.parse(localStorage.getItem('favs') || '[]');
+      if (screen.value && !favs.includes(screen.value)) favs.push(screen.value);
+      localStorage.setItem('favs', JSON.stringify(favs));
+      renderFavorites();
+    }
+
+    function renderFavorites() {
+      const favs = JSON.parse(localStorage.getItem('favs') || '[]');
+      const div = document.getElementById('favorites');
+      div.innerHTML = `<button onclick="saveFavorite()">⭐ Save Favorite</button>`;
+      favs.forEach(v => {
+        const b = document.createElement('button');
+        b.textContent = v;
+        b.onclick = () => screen.value = v;
+        div.appendChild(b);
+      });
+    }
+
+    function startVoice() {
+      const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      rec.lang = 'en-US';
+      rec.onresult = e => {
+        screen.value += e.results[0][0].transcript.replace(/[^0-9+\-*/().]/g, '');
+        checkBalance();
+      };
+      rec.start();
+    }
+
+    function changeTheme(t) {
+      document.body.className = t;
+      themeSelect.value = t;
+      localStorage.setItem('theme', t);
+    }
+
+    function autoSwitchTheme() {
+      const h = new Date().getHours();
+      changeTheme(h >= 7 && h < 19 ? 'frost' : 'neon');
+    }
+
     window.onload = () => {
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      document.body.className = savedTheme;
-      themeSelect.value = savedTheme;
+      renderFavorites();
+      const t = localStorage.getItem('theme') || '';
+      if (t) changeTheme(t); else autoSwitchTheme();
     };
   </script>
 </body>
