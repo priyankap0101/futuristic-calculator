@@ -374,97 +374,135 @@ input:focus {
   </div>
 
   <script>
-    const screen = document.getElementById('screen');
-    const themeSelect = document.getElementById('themeSelect');
-    let historyArr = [];
+   const screen = document.getElementById('screen');
+const themeSelect = document.getElementById('themeSelect');
+let historyArr = [];
 
-    function append(ch) { screen.value += ch; checkBalance(); }
-    function del() { screen.value = screen.value.slice(0, -1); checkBalance(); }
-    function clearScreen() { screen.value = ''; checkBalance(); }
+// ————————— Calculator Functions —————————
 
-    function calculate() {
-      try {
-        let res = eval(screen.value);
-        historyArr.push(`${screen.value} = ${res}`);
-        if (historyArr.length > 10) historyArr.shift();
-        updateHistory();
-        screen.value = res;
-      } catch {
-        screen.value = 'Error';
-      }
+function append(ch) {
+  screen.value += ch;
+  checkBalance();
+}
+
+function del() {
+  screen.value = screen.value.slice(0, -1);
+  checkBalance();
+}
+
+function clearScreen() {
+  screen.value = '';
+  checkBalance();
+}
+
+function calculate() {
+  try {
+    const expression = screen.value;
+    const result = eval(expression); // consider replacing eval in the future for safety
+    screen.value = result;
+    historyArr.push(`${expression} = ${result}`);
+    if (historyArr.length > 10) historyArr.shift();
+    updateHistory();
+  } catch {
+    screen.value = 'Error';
+  }
+  checkBalance();
+}
+
+// ————————— History Functions —————————
+
+function updateHistory() {
+  const h = document.getElementById('history');
+  h.innerHTML = '';
+  historyArr.slice().reverse().forEach(entry => {
+    const d = document.createElement('div');
+    d.textContent = entry;
+    d.onclick = () => screen.value = entry.split('=')[0].trim();
+    h.appendChild(d);
+  });
+}
+
+function copyResult() {
+  navigator.clipboard.writeText(screen.value).then(() => alert('Copied!'));
+}
+
+// ————————— Bracket Balance Checker —————————
+
+function checkBalance() {
+  let bal = 0;
+  for (const char of screen.value) {
+    if (char === '(') bal++;
+    else if (char === ')') bal--;
+  }
+  document.getElementById('bracketBtn').style.backgroundColor =
+    bal !== 0 ? 'var(--danger)' : '';
+}
+
+// ————————— Favorites Functions —————————
+
+function saveFavorite() {
+  const favs = JSON.parse(localStorage.getItem('favs') || '[]');
+  const expr = screen.value;
+  if (expr && !favs.includes(expr)) {
+    favs.push(expr);
+    localStorage.setItem('favs', JSON.stringify(favs));
+    renderFavorites();
+  }
+}
+
+function renderFavorites() {
+  const favs = JSON.parse(localStorage.getItem('favs') || '[]');
+  const div = document.getElementById('favorites');
+  div.innerHTML = `<button onclick="saveFavorite()">⭐ Save Favorite</button>`;
+  favs.forEach(fav => {
+    const btn = document.createElement('button');
+    btn.textContent = fav;
+    btn.onclick = () => screen.value = fav;
+    div.appendChild(btn);
+  });
+}
+
+// ————————— Voice Input Function —————————
+
+function startVoice() {
+  try {
+    const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    rec.lang = 'en-US';
+    rec.onresult = e => {
+      const spoken = e.results[0][0].transcript;
+      const sanitized = spoken.replace(/[^0-9+\-*/().]/g, '');
+      screen.value += sanitized;
       checkBalance();
-    }
-
-    function updateHistory() {
-      const h = document.getElementById('history');
-      h.innerHTML = '';
-      historyArr.slice().reverse().forEach(e => {
-        const d = document.createElement('div');
-        d.textContent = e;
-        d.onclick = () => screen.value = e.split('=')[0].trim();
-        h.appendChild(d);
-      });
-    }
-
-    function copyResult() {
-      navigator.clipboard.writeText(screen.value).then(() => alert('Copied!'));
-    }
-
-    function checkBalance() {
-      let bal = 0;
-      for (let c of screen.value) {
-        if (c === '(') bal++;
-        else if (c === ')') bal--;
-      }
-      document.getElementById('bracketBtn').style.backgroundColor =
-        bal !== 0 ? 'var(--danger)' : '';
-    }
-
-    function saveFavorite() {
-      let favs = JSON.parse(localStorage.getItem('favs') || '[]');
-      if (screen.value && !favs.includes(screen.value)) favs.push(screen.value);
-      localStorage.setItem('favs', JSON.stringify(favs));
-      renderFavorites();
-    }
-
-    function renderFavorites() {
-      const favs = JSON.parse(localStorage.getItem('favs') || '[]');
-      const div = document.getElementById('favorites');
-      div.innerHTML = `<button onclick="saveFavorite()">⭐ Save Favorite</button>`;
-      favs.forEach(v => {
-        const b = document.createElement('button');
-        b.textContent = v;
-        b.onclick = () => screen.value = v;
-        div.appendChild(b);
-      });
-    }
-
-    function startVoice() {
-      const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      rec.lang = 'en-US';
-      rec.onresult = e => {
-        screen.value += e.results[0][0].transcript.replace(/[^0-9+\-*/().]/g, '');
-        checkBalance();
-      };
-      rec.start();
-    }
-
-    function changeTheme(t) {
-      document.body.className = t;
-      themeSelect.value = t;
-      localStorage.setItem('theme', t);
-    }
-
-    function autoSwitchTheme() {
-      const h = new Date().getHours();
-      changeTheme(h >= 7 && h < 19 ? 'frost' : 'neon');
-    }
-
-    window.onload = () => {
-      renderFavorites();
-      const t = localStorage.getItem('theme') || '';
-      if (t) changeTheme(t); else autoSwitchTheme();
     };
+    rec.onerror = e => alert('Voice error: ' + e.error);
+    rec.start();
+  } catch (err) {
+    alert('Speech recognition not supported on this browser.');
+  }
+}
+
+// ————————— Theme Management —————————
+
+function changeTheme(theme) {
+  document.body.className = theme;
+  themeSelect.value = theme;
+  localStorage.setItem('theme', theme);
+}
+
+function autoSwitchTheme() {
+  const hour = new Date().getHours();
+  const theme = (hour >= 7 && hour < 19) ? 'frost' : 'neon';
+  changeTheme(theme);
+}
+
+// ————————— Initialization —————————
+
+window.onload = () => {
+  renderFavorites();
+  const savedTheme = localStorage.getItem('theme');
+  savedTheme ? changeTheme(savedTheme) : autoSwitchTheme();
+};
+
   </script>
 </body>
 </html>
