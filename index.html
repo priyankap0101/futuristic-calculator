@@ -378,10 +378,10 @@ input:focus {
 const themeSelect = document.getElementById('themeSelect');
 let historyArr = [];
 
-// ————————— Calculator Functions —————————
+// ——————————— Core Calculator Logic ———————————
 
-function append(ch) {
-  screen.value += ch;
+function append(char) {
+  screen.value += char;
   checkBalance();
 }
 
@@ -398,90 +398,115 @@ function clearScreen() {
 function calculate() {
   try {
     const expression = screen.value;
-    const result = eval(expression); // consider replacing eval in the future for safety
+    const result = eval(expression); // Warning: Replace eval in production
     screen.value = result;
-    historyArr.push(`${expression} = ${result}`);
-    if (historyArr.length > 10) historyArr.shift();
-    updateHistory();
-  } catch {
+    addToHistory(expression, result);
+  } catch (err) {
     screen.value = 'Error';
   }
   checkBalance();
 }
 
-// ————————— History Functions —————————
+// ——————————— History Management ———————————
+
+function addToHistory(expression, result) {
+  historyArr.push(`${expression} = ${result}`);
+  if (historyArr.length > 10) historyArr.shift();
+  updateHistory();
+}
 
 function updateHistory() {
-  const h = document.getElementById('history');
-  h.innerHTML = '';
+  const historyContainer = document.getElementById('history');
+  historyContainer.innerHTML = '';
+
   historyArr.slice().reverse().forEach(entry => {
-    const d = document.createElement('div');
-    d.textContent = entry;
-    d.onclick = () => screen.value = entry.split('=')[0].trim();
-    h.appendChild(d);
+    const item = document.createElement('div');
+    item.textContent = entry;
+    item.onclick = () => screen.value = entry.split('=')[0].trim();
+    historyContainer.appendChild(item);
   });
 }
 
 function copyResult() {
-  navigator.clipboard.writeText(screen.value).then(() => alert('Copied!'));
+  navigator.clipboard.writeText(screen.value)
+    .then(() => alert('Copied!'))
+    .catch(() => alert('Failed to copy!'));
 }
 
-// ————————— Bracket Balance Checker —————————
+// ——————————— Parentheses Balance Check ———————————
 
 function checkBalance() {
-  let bal = 0;
+  let balance = 0;
   for (const char of screen.value) {
-    if (char === '(') bal++;
-    else if (char === ')') bal--;
+    if (char === '(') balance++;
+    else if (char === ')') balance--;
   }
+
   document.getElementById('bracketBtn').style.backgroundColor =
-    bal !== 0 ? 'var(--danger)' : '';
+    balance !== 0 ? 'var(--danger)' : '';
 }
 
-// ————————— Favorites Functions —————————
+// ——————————— Favorites ———————————
 
 function saveFavorite() {
-  const favs = JSON.parse(localStorage.getItem('favs') || '[]');
-  const expr = screen.value;
-  if (expr && !favs.includes(expr)) {
-    favs.push(expr);
+  const current = screen.value;
+  if (!current) return;
+
+  const favs = getFavorites();
+  if (!favs.includes(current)) {
+    favs.push(current);
     localStorage.setItem('favs', JSON.stringify(favs));
     renderFavorites();
   }
 }
 
 function renderFavorites() {
-  const favs = JSON.parse(localStorage.getItem('favs') || '[]');
-  const div = document.getElementById('favorites');
-  div.innerHTML = `<button onclick="saveFavorite()">⭐ Save Favorite</button>`;
+  const favoritesContainer = document.getElementById('favorites');
+  const favs = getFavorites();
+
+  favoritesContainer.innerHTML = `<button onclick="saveFavorite()">⭐ Save Favorite</button>`;
   favs.forEach(fav => {
-    const btn = document.createElement('button');
-    btn.textContent = fav;
-    btn.onclick = () => screen.value = fav;
-    div.appendChild(btn);
+    const button = document.createElement('button');
+    button.textContent = fav;
+    button.onclick = () => screen.value = fav;
+    favoritesContainer.appendChild(button);
   });
 }
 
-// ————————— Voice Input Function —————————
+function getFavorites() {
+  return JSON.parse(localStorage.getItem('favs') || '[]');
+}
+
+// ——————————— Voice Input ———————————
 
 function startVoice() {
   try {
-    const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    rec.lang = 'en-US';
-    rec.onresult = e => {
-      const spoken = e.results[0][0].transcript;
-      const sanitized = spoken.replace(/[^0-9+\-*/().]/g, '');
-      screen.value += sanitized;
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
+
+    recognition.onresult = event => {
+      const spokenText = event.results[0][0].transcript;
+      const parsed = spokenText
+        .toLowerCase()
+        .replace(/plus/g, '+')
+        .replace(/minus/g, '-')
+        .replace(/times|into|multiply/g, '*')
+        .replace(/divide|by/g, '/')
+        .replace(/[^\d+\-*/().]/g, '');
+
+      screen.value += parsed;
       checkBalance();
     };
-    rec.onerror = e => alert('Voice error: ' + e.error);
-    rec.start();
-  } catch (err) {
-    alert('Speech recognition not supported on this browser.');
+
+    recognition.onerror = err => alert('Voice error: ' + err.error);
+    recognition.start();
+
+  } catch {
+    alert('Speech recognition is not supported on this browser.');
   }
 }
 
-// ————————— Theme Management —————————
+// ——————————— Theme Handling ———————————
 
 function changeTheme(theme) {
   document.body.className = theme;
@@ -491,11 +516,11 @@ function changeTheme(theme) {
 
 function autoSwitchTheme() {
   const hour = new Date().getHours();
-  const theme = (hour >= 7 && hour < 19) ? 'frost' : 'neon';
-  changeTheme(theme);
+  const isDay = hour >= 7 && hour < 19;
+  changeTheme(isDay ? 'frost' : 'neon');
 }
 
-// ————————— Initialization —————————
+// ——————————— On Load ———————————
 
 window.onload = () => {
   renderFavorites();
