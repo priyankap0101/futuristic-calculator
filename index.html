@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>3D Futuristic Calculator</title>
   <style>
-    /* ————————— Root & Themes ————————— */
-    :root {
+/* ——————————————————————— Root Variables ——————————————————————— */
+:root {
   --font: 'Segoe UI', 'Roboto', sans-serif;
   --bg: #ffffff;
   --text: #1a1a1a;
@@ -20,129 +20,131 @@
   --box-shadow-inset: inset 0 -2px 2px rgba(255,255,255,0.04);
 }
 
-/* Themes */
+/* ——————————————————————— Themes ——————————————————————— */
+
 body.light {
   --bg: #ffffff;
-  --btn-bg: linear-gradient(145deg,#ffffff,#dce2e9);
-  --btn-hover: linear-gradient(145deg,#d2d8e0,#c6ccd4);
+  --btn-bg: linear-gradient(145deg, #ffffff, #dce2e9);
+  --btn-hover: linear-gradient(145deg, #d2d8e0, #c6ccd4);
   --text: #1a1a1a;
   --accent: #007bff;
-  --danger: #dc3545;
-  --warn: #ffc107;
   --glow: none;
 }
 
+/* Neon, Matrix, Sunburst, Cyber, Aurora, Galaxy, Frost, Verdant, Tron, Mystic */
+
 body.neon {
   --bg: #0a0020;
-  --btn-bg: linear-gradient(145deg,#4d0066,#220033);
-  --btn-hover: linear-gradient(145deg,#9900cc,#440066);
+  --btn-bg: linear-gradient(145deg, #4d0066, #220033);
+  --btn-hover: linear-gradient(145deg, #9900cc, #440066);
   --text: #ffffff;
   --accent: #ff00f7;
   --danger: #ff204e;
   --warn: #ffac00;
-  --glow: 0 0 18px rgba(255,0,247,0.6);
+  --glow: 0 0 18px rgba(255, 0, 247, 0.6);
 }
 
 body.matrix {
   --bg: #010a01;
-  --btn-bg: linear-gradient(145deg,#003300,#001a00);
-  --btn-hover: linear-gradient(145deg,#00cc00,#006600);
+  --btn-bg: linear-gradient(145deg, #003300, #001a00);
+  --btn-hover: linear-gradient(145deg, #00cc00, #006600);
   --text: #ccffcc;
   --accent: #00ff33;
   --danger: #ff0033;
   --warn: #ffee00;
-  --glow: 0 0 16px rgba(0,255,0,0.7);
+  --glow: 0 0 16px rgba(0, 255, 0, 0.7);
 }
 
 body.sunburst {
   --bg: #1b1400;
-  --btn-bg: linear-gradient(145deg,#4d3b00,#2a1f00);
-  --btn-hover: linear-gradient(145deg,#ffcc00,#cc9900);
+  --btn-bg: linear-gradient(145deg, #4d3b00, #2a1f00);
+  --btn-hover: linear-gradient(145deg, #ffcc00, #cc9900);
   --text: #fff5cc;
   --accent: #ffdd33;
   --danger: #ff4d00;
   --warn: #ffe600;
-  --glow: 0 0 16px rgba(255,204,0,0.6);
+  --glow: 0 0 16px rgba(255, 204, 0, 0.6);
 }
 
 body.cyber {
   --bg: #0b0d1a;
-  --btn-bg: linear-gradient(145deg,#1a1d3a,#0d0f25);
-  --btn-hover: linear-gradient(145deg,#353a75,#1e214c);
+  --btn-bg: linear-gradient(145deg, #1a1d3a, #0d0f25);
+  --btn-hover: linear-gradient(145deg, #353a75, #1e214c);
   --text: #0fffff;
   --accent: #00ffe0;
   --danger: #ff0066;
   --warn: #ffff00;
-  --glow: 0 0 16px rgba(0,255,255,0.5);
+  --glow: 0 0 16px rgba(0, 255, 255, 0.5);
 }
 
 body.aurora {
   --bg: #1a1b2c;
-  --btn-bg: linear-gradient(145deg,#393c5e,#292a4a);
-  --btn-hover: linear-gradient(145deg,#6a6cb0,#3d3f6e);
+  --btn-bg: linear-gradient(145deg, #393c5e, #292a4a);
+  --btn-hover: linear-gradient(145deg, #6a6cb0, #3d3f6e);
   --text: #fefefe;
   --accent: #f45fff;
   --danger: #ff4e88;
   --warn: #f0ff87;
-  --glow: 0 0 16px rgba(244,95,255,0.5);
+  --glow: 0 0 16px rgba(244, 95, 255, 0.5);
 }
 
 body.galaxy {
   --bg: #0a0824;
-  --btn-bg: linear-gradient(145deg,#1f1b4d,#0f0c2f);
-  --btn-hover: linear-gradient(145deg,#3a2d7d,#1d1560);
+  --btn-bg: linear-gradient(145deg, #1f1b4d, #0f0c2f);
+  --btn-hover: linear-gradient(145deg, #3a2d7d, #1d1560);
   --text: #d6d6ff;
   --accent: #9370db;
   --danger: #ff6f91;
   --warn: #ffd93b;
-  --glow: 0 0 14px rgba(147,112,219,0.5);
+  --glow: 0 0 14px rgba(147, 112, 219, 0.5);
 }
 
 body.frost {
   --bg: #eaf4f8;
-  --btn-bg: linear-gradient(145deg,#d1e0e9,#c6d7de);
-  --btn-hover: linear-gradient(145deg,#b8d2e2,#a7c6d7);
+  --btn-bg: linear-gradient(145deg, #d1e0e9, #c6d7de);
+  --btn-hover: linear-gradient(145deg, #b8d2e2, #a7c6d7);
   --text: #1a1a1a;
   --accent: #0077b6;
   --danger: #e63946;
   --warn: #ffba08;
-  --glow: 0 0 10px rgba(0,119,182,0.3);
+  --glow: 0 0 10px rgba(0, 119, 182, 0.3);
 }
 
 body.verdant {
   --bg: #0f1c0f;
-  --btn-bg: linear-gradient(145deg,#2a4d2a,#1e351e);
-  --btn-hover: linear-gradient(145deg,#3f8f3f,#2e6a2e);
+  --btn-bg: linear-gradient(145deg, #2a4d2a, #1e351e);
+  --btn-hover: linear-gradient(145deg, #3f8f3f, #2e6a2e);
   --text: #e6ffe6;
   --accent: #76ff03;
   --danger: #cc2936;
   --warn: #ffcc00;
-  --glow: 0 0 14px rgba(118,255,3,0.5);
+  --glow: 0 0 14px rgba(118, 255, 3, 0.5);
 }
 
 body.tron {
   --bg: #0c0f1a;
-  --btn-bg: linear-gradient(145deg,#1c1f33,#111425);
-  --btn-hover: linear-gradient(145deg,#20c997,#a100f2);
+  --btn-bg: linear-gradient(145deg, #1c1f33, #111425);
+  --btn-hover: linear-gradient(145deg, #20c997, #a100f2);
   --text: #cafffb;
   --accent: #00ffd5;
   --danger: #ff2079;
   --warn: #f7e733;
-  --glow: 0 0 18px rgba(0,255,213,0.7);
+  --glow: 0 0 18px rgba(0, 255, 213, 0.7);
 }
 
 body.mystic {
   --bg: #13001a;
-  --btn-bg: linear-gradient(145deg,#310033,#1e0024);
-  --btn-hover: linear-gradient(145deg,#730075,#4d004d);
+  --btn-bg: linear-gradient(145deg, #310033, #1e0024);
+  --btn-hover: linear-gradient(145deg, #730075, #4d004d);
   --text: #f7e6ff;
   --accent: #c300ff;
   --danger: #ff3366;
   --warn: #ffcc66;
-  --glow: 0 0 16px rgba(195,0,255,0.5);
+  --glow: 0 0 16px rgba(195, 0, 255, 0.5);
 }
 
-/* Global Styles */
+/* ——————————————————————— Global Body ——————————————————————— */
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -155,20 +157,24 @@ body {
   transition: background 0.4s ease, color 0.4s ease;
 }
 
+/* ——————————————————————— Calculator Container ——————————————————————— */
+
 .calculator {
   position: relative;
   max-width: 360px;
   width: 100%;
   padding: 1.5rem 1.2rem 2rem;
   border-radius: 1rem;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(14px);
   box-shadow:
-    0 12px 30px rgba(0,0,0,0.45),
+    0 12px 30px rgba(0, 0, 0, 0.45),
     0 0 7px var(--accent),
-    inset 0 1px 6px rgba(255,255,255,0.03);
+    inset 0 1px 6px rgba(255, 255, 255, 0.03);
 }
+
+/* ——————————————————————— Theme Dropdown ——————————————————————— */
 
 .theme-toggle {
   position: absolute;
@@ -199,6 +205,8 @@ select option {
   color: var(--text);
 }
 
+/* ——————————————————————— Display ——————————————————————— */
+
 input.screen {
   width: 90%;
   background: rgba(255,255,255,0.08);
@@ -215,12 +223,16 @@ input.screen {
     0 0 5px var(--accent);
 }
 
+/* ——————————————————————— Buttons Grid ——————————————————————— */
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(4,1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   margin-bottom: 1rem;
 }
+
+/* ——————————————————————— Buttons ——————————————————————— */
 
 button {
   padding: 0.75rem;
@@ -255,11 +267,18 @@ input:focus {
   background: var(--accent);
   color: #000;
   font-weight: 700;
-  box-shadow: var(--glow), 0 6px 12px rgba(0,255,225,0.3);
+  box-shadow: var(--glow), 0 6px 12px rgba(0, 255, 225, 0.3);
 }
 
-.clear { background: var(--danger); }
-.del { background: var(--warn); }
+.clear {
+  background: var(--danger);
+}
+
+.del {
+  background: var(--warn);
+}
+
+/* ——————————————————————— Controls & History ——————————————————————— */
 
 #controls {
   text-align: right;
@@ -293,11 +312,14 @@ input:focus {
   background: var(--btn-hover);
 }
 
+/* ——————————————————————— Responsive ——————————————————————— */
+
 @media (max-width: 480px) {
   html {
     font-size: 14px;
   }
 }
+
 
   </style>
 </head>
