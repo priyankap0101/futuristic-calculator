@@ -378,106 +378,116 @@ input:focus {
 const themeSelect = document.getElementById('themeSelect');
 let historyArr = [];
 
-// ——————————— Core Calculator Logic ———————————
+// ——————————— Calculator Logic ———————————
 
 function append(char) {
   screen.value += char;
-  checkBalance();
+  updateBracketIndicator();
 }
 
 function del() {
   screen.value = screen.value.slice(0, -1);
-  checkBalance();
+  updateBracketIndicator();
 }
 
 function clearScreen() {
   screen.value = '';
-  checkBalance();
+  updateBracketIndicator();
 }
 
 function calculate() {
   try {
-    const expression = screen.value;
-    const result = eval(expression); // Warning: Replace eval in production
+    const expr = screen.value;
+    // Safer eval - only evaluate math expressions
+    if (!/^[0-9+\-*/().\s]+$/.test(expr)) {
+      throw new Error('Invalid characters');
+    }
+
+    const result = eval(expr); // Note: still unsafe for untrusted inputs
     screen.value = result;
-    addToHistory(expression, result);
-  } catch (err) {
+    addToHistory(expr, result);
+  } catch (e) {
     screen.value = 'Error';
   }
-  checkBalance();
+  updateBracketIndicator();
 }
 
-// ——————————— History Management ———————————
+// ——————————— History ———————————
 
-function addToHistory(expression, result) {
-  historyArr.push(`${expression} = ${result}`);
+function addToHistory(expr, result) {
+  const entry = `${expr} = ${result}`;
+  historyArr.push(entry);
   if (historyArr.length > 10) historyArr.shift();
-  updateHistory();
+  renderHistory();
 }
 
-function updateHistory() {
-  const historyContainer = document.getElementById('history');
-  historyContainer.innerHTML = '';
+function renderHistory() {
+  const container = document.getElementById('history');
+  container.innerHTML = '';
 
   historyArr.slice().reverse().forEach(entry => {
-    const item = document.createElement('div');
-    item.textContent = entry;
-    item.onclick = () => screen.value = entry.split('=')[0].trim();
-    historyContainer.appendChild(item);
+    const div = document.createElement('div');
+    div.textContent = entry;
+    div.onclick = () => {
+      screen.value = entry.split('=')[0].trim();
+      updateBracketIndicator();
+    };
+    container.appendChild(div);
   });
 }
 
 function copyResult() {
   navigator.clipboard.writeText(screen.value)
     .then(() => alert('Copied!'))
-    .catch(() => alert('Failed to copy!'));
+    .catch(() => alert('Copy failed'));
 }
 
-// ——————————— Parentheses Balance Check ———————————
+// ——————————— Bracket Balance Indicator ———————————
 
-function checkBalance() {
-  let balance = 0;
-  for (const char of screen.value) {
-    if (char === '(') balance++;
-    else if (char === ')') balance--;
-  }
-
-  document.getElementById('bracketBtn').style.backgroundColor =
-    balance !== 0 ? 'var(--danger)' : '';
+function updateBracketIndicator() {
+  const open = (screen.value.match(/\(/g) || []).length;
+  const close = (screen.value.match(/\)/g) || []).length;
+  const btn = document.getElementById('bracketBtn');
+  btn.style.backgroundColor = open !== close ? 'var(--danger)' : '';
 }
 
 // ——————————— Favorites ———————————
 
-function saveFavorite() {
-  const current = screen.value;
-  if (!current) return;
+function getFavorites() {
+  try {
+    return JSON.parse(localStorage.getItem('favs') || '[]');
+  } catch {
+    return [];
+  }
+}
 
+function saveFavorite() {
   const favs = getFavorites();
-  if (!favs.includes(current)) {
-    favs.push(current);
+  const expr = screen.value.trim();
+  if (expr && !favs.includes(expr)) {
+    favs.push(expr);
     localStorage.setItem('favs', JSON.stringify(favs));
     renderFavorites();
   }
 }
 
 function renderFavorites() {
-  const favoritesContainer = document.getElementById('favorites');
+  const container = document.getElementById('favorites');
   const favs = getFavorites();
 
-  favoritesContainer.innerHTML = `<button onclick="saveFavorite()">⭐ Save Favorite</button>`;
-  favs.forEach(fav => {
-    const button = document.createElement('button');
-    button.textContent = fav;
-    button.onclick = () => screen.value = fav;
-    favoritesContainer.appendChild(button);
+  container.innerHTML = `<button onclick="saveFavorite()">⭐ Save Favorite</button>`;
+  favs.forEach(expr => {
+    const btn = document.createElement('button');
+    btn.textContent = expr;
+    btn.onclick = () => {
+      screen.value = expr;
+      updateBracketIndicator();
+    };
+    container.appendChild(btn);
   });
 }
 
-function getFavorites() {
-  return JSON.parse(localStorage.getItem('favs') || '[]');
-}
-
-// ——————————— Voice Input ———————————
+// ——————————— Smart Voice Input ———————————
 
 function startVoice() {
   try {
@@ -485,24 +495,23 @@ function startVoice() {
     recognition.lang = 'en-US';
 
     recognition.onresult = event => {
-      const spokenText = event.results[0][0].transcript;
-      const parsed = spokenText
-        .toLowerCase()
+      const spoken = event.results[0][0].transcript.toLowerCase();
+      const mapped = spoken
         .replace(/plus/g, '+')
         .replace(/minus/g, '-')
-        .replace(/times|into|multiply/g, '*')
-        .replace(/divide|by/g, '/')
+        .replace(/(times|into|multiplied by)/g, '*')
+        .replace(/(divided by|by)/g, '/')
+        .replace(/equals/g, '=')
         .replace(/[^\d+\-*/().]/g, '');
 
-      screen.value += parsed;
-      checkBalance();
+      screen.value += mapped;
+      updateBracketIndicator();
     };
 
-    recognition.onerror = err => alert('Voice error: ' + err.error);
+    recognition.onerror = e => alert(`Voice Error: ${e.error}`);
     recognition.start();
-
   } catch {
-    alert('Speech recognition is not supported on this browser.');
+    alert('Speech recognition not supported in this browser.');
   }
 }
 
@@ -516,16 +525,17 @@ function changeTheme(theme) {
 
 function autoSwitchTheme() {
   const hour = new Date().getHours();
-  const isDay = hour >= 7 && hour < 19;
-  changeTheme(isDay ? 'frost' : 'neon');
+  const theme = (hour >= 7 && hour < 19) ? 'frost' : 'neon';
+  changeTheme(theme);
 }
 
-// ——————————— On Load ———————————
+// ——————————— Initialization ———————————
 
 window.onload = () => {
   renderFavorites();
   const savedTheme = localStorage.getItem('theme');
-  savedTheme ? changeTheme(savedTheme) : autoSwitchTheme();
+  if (savedTheme) changeTheme(savedTheme);
+  else autoSwitchTheme();
 };
 
   </script>
