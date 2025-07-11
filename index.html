@@ -400,8 +400,10 @@ function calculate() {
   if (!expr) return;
 
   try {
+    // Basic safety check
     if (!/^[0-9+\-*/().\s]+$/.test(expr)) throw new Error('Invalid characters');
-    const result = eval(expr);
+
+    const result = eval(expr); // Use math parser in future for more safety
     if (typeof result === 'number' && isFinite(result)) {
       screen.value = result;
       addToHistory(expr, result);
@@ -424,7 +426,7 @@ function updateBracketIndicator() {
   btn.style.backgroundColor = (open !== close) ? 'var(--danger)' : '';
 }
 
-// ————————— History Feature —————————
+// ————————— History Management —————————
 
 function addToHistory(expr, result) {
   const entry = `${expr} = ${result}`;
@@ -453,7 +455,7 @@ function copyResult() {
     .catch(() => alert('Copy failed.'));
 }
 
-// ————————— Favorites with LocalStorage —————————
+// ————————— Favorites System —————————
 
 function getFavorites() {
   try {
@@ -500,14 +502,7 @@ function startVoice() {
 
     recognition.onresult = e => {
       const spoken = e.results[0][0].transcript.toLowerCase();
-      const mapped = spoken
-        .replace(/plus/g, '+')
-        .replace(/minus/g, '-')
-        .replace(/(times|into|multiplied by)/g, '*')
-        .replace(/(divided by|by)/g, '/')
-        .replace(/equals?/g, '=')
-        .replace(/[^\d+\-*/().]/g, '');
-
+      const mapped = parseSpokenMath(spoken);
       screen.value += mapped;
       updateBracketIndicator();
     };
@@ -515,11 +510,21 @@ function startVoice() {
     recognition.onerror = err => alert(`Voice error: ${err.error}`);
     recognition.start();
   } catch {
-    alert('Voice recognition not supported.');
+    alert('Voice recognition not supported in this browser.');
   }
 }
 
-// ————————— Theme Management —————————
+function parseSpokenMath(spoken) {
+  return spoken
+    .replace(/plus/g, '+')
+    .replace(/minus/g, '-')
+    .replace(/(times|into|multiplied by)/g, '*')
+    .replace(/(divided by|over)/g, '/')
+    .replace(/equals?/g, '=')
+    .replace(/[^\d+\-*/().]/g, '');
+}
+
+// ————————— Theme Handling —————————
 
 function changeTheme(theme) {
   document.body.className = theme;
@@ -533,13 +538,14 @@ function autoSwitchTheme() {
   changeTheme(theme);
 }
 
-// ————————— Initialization —————————
+// ————————— App Initialization —————————
 
 window.onload = () => {
   renderFavorites();
   const savedTheme = localStorage.getItem('theme');
   savedTheme ? changeTheme(savedTheme) : autoSwitchTheme();
 };
+
 
   </script>
 </body>
