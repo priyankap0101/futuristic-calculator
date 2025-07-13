@@ -400,9 +400,10 @@ function calculate() {
   if (!expr) return;
 
   try {
-    if (!/^[0-9+\-*/().\s]+$/.test(expr)) throw new Error('Invalid characters');
-    const result = eval(expr); // For production, use a safer math parser
+    // Basic validation (for digits/operators/brackets)
+    if (!/^[\d+\-*/().\s]+$/.test(expr)) throw new Error('Invalid input');
 
+    const result = eval(expr); // Replace with math.js for full security
     if (typeof result === 'number' && isFinite(result)) {
       screen.value = result;
       addToHistory(expr, result);
@@ -421,8 +422,8 @@ function calculate() {
 function updateBracketIndicator() {
   const open = (screen.value.match(/\(/g) || []).length;
   const close = (screen.value.match(/\)/g) || []).length;
-  const bracketBtn = document.getElementById('bracketBtn');
-  bracketBtn.style.backgroundColor = (open !== close) ? 'var(--danger)' : '';
+  const btn = document.getElementById('bracketBtn');
+  btn.style.backgroundColor = open !== close ? 'var(--danger)' : '';
 }
 
 // ————————— History Management —————————
@@ -435,8 +436,8 @@ function addToHistory(expr, result) {
 }
 
 function renderHistory() {
-  const historyContainer = document.getElementById('history');
-  historyContainer.innerHTML = '';
+  const container = document.getElementById('history');
+  container.innerHTML = '';
   historyArr.slice().reverse().forEach(entry => {
     const div = document.createElement('div');
     div.textContent = entry;
@@ -444,13 +445,14 @@ function renderHistory() {
       screen.value = entry.split('=')[0].trim();
       updateBracketIndicator();
     };
-    historyContainer.appendChild(div);
+    container.appendChild(div);
   });
 }
 
 function copyResult() {
+  if (!screen.value) return;
   navigator.clipboard.writeText(screen.value)
-    .then(() => alert('Copied!'))
+    .then(() => alert('Result copied!'))
     .catch(() => alert('Copy failed.'));
 }
 
@@ -473,6 +475,9 @@ function saveFavorite() {
     favs.push(expr);
     localStorage.setItem('favs', JSON.stringify(favs));
     renderFavorites();
+    alert('Saved to favorites!');
+  } else {
+    alert('Already in favorites.');
   }
 }
 
@@ -533,7 +538,7 @@ function changeTheme(theme) {
 
 function autoSwitchTheme() {
   const hour = new Date().getHours();
-  const theme = (hour >= 7 && hour < 19) ? 'frost' : 'neon';
+  const theme = hour >= 7 && hour < 19 ? 'frost' : 'neon';
   changeTheme(theme);
 }
 
