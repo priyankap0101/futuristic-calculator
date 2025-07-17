@@ -376,10 +376,15 @@ input:focus {
   <script>
 const screen = document.getElementById('screen');
 const themeSelect = document.getElementById('themeSelect');
-let historyArr = [];
 
-// —————— Calculator Core ——————
+// ——— Utils ———
+const isValidExpression = expr => /^[\d+\-*/().\s]+$/.test(expr);
+const getBracketCount = text => ({
+  open: (text.match(/\(/g) || []).length,
+  close: (text.match(/\)/g) || []).length,
+});
 
+// ——— Calculator Core ———
 function append(char) {
   screen.value += char;
   updateBracketIndicator();
@@ -400,65 +405,61 @@ function calculate() {
   if (!expression) return;
 
   try {
-    if (!/^[\d+\-*/().\s]+$/.test(expression)) throw new Error('Invalid input');
-    const result = eval(expression); // Consider secure alternative like math.js
+    if (!isValidExpression(expression)) throw 'Invalid input';
+    const result = eval(expression);
+    if (!isFinite(result)) throw 'Invalid result';
 
-    if (typeof result === 'number' && isFinite(result)) {
-      addToHistory(expression, result);
-      screen.value = result;
-    } else {
-      throw new Error('Invalid result');
-    }
-  } catch (e) {
+    screen.value = result;
+    addToHistory(expression, result);
+  } catch {
     screen.value = 'Error';
   }
 
   updateBracketIndicator();
 }
 
-// —————— Bracket Balance Indicator ——————
-
+// ——— Bracket Indicator ———
 function updateBracketIndicator() {
-  const open = (screen.value.match(/\(/g) || []).length;
-  const close = (screen.value.match(/\)/g) || []).length;
-  const bracketBtn = document.getElementById('bracketBtn');
-  bracketBtn.style.backgroundColor = open !== close ? 'var(--danger)' : '';
+  const { open, close } = getBracketCount(screen.value);
+  document.getElementById('bracketBtn').style.backgroundColor =
+    open !== close ? 'var(--danger)' : '';
 }
 
-// —————— History Management ——————
+// ——— History ———
+const historyArr = [];
 
-function addToHistory(expression, result) {
-  const entry = `${expression} = ${result}`;
+function addToHistory(expr, result) {
+  const entry = `${expr} = ${result}`;
+  if (historyArr.length >= 10) historyArr.shift();
   historyArr.push(entry);
-  if (historyArr.length > 10) historyArr.shift();
   renderHistory();
 }
 
 function renderHistory() {
   const container = document.getElementById('history');
   container.innerHTML = '';
-  historyArr.slice().reverse().forEach(entry => {
-    const div = document.createElement('div');
-    div.textContent = entry;
-    div.title = 'Click to reuse';
-    div.onclick = () => {
+  [...historyArr].reverse().forEach(entry => {
+    const el = document.createElement('div');
+    el.textContent = entry;
+    el.title = 'Click to reuse';
+    el.onclick = () => {
       screen.value = entry.split('=')[0].trim();
       updateBracketIndicator();
     };
-    container.appendChild(div);
+    container.appendChild(el);
   });
 }
 
 function copyResult() {
   const result = screen.value.trim();
-  if (!result) return;
-  navigator.clipboard.writeText(result)
-    .then(() => alert('✅ Result copied!'))
-    .catch(() => alert('❌ Copy failed.'));
+  if (result) {
+    navigator.clipboard.writeText(result)
+      .then(() => alert('✅ Copied!'))
+      .catch(() => alert('❌ Failed to copy.'));
+  }
 }
 
-// —————— Favorites Management ——————
-
+// ——— Favorites ———
 function getFavorites() {
   try {
     return JSON.parse(localStorage.getItem('favs')) || [];
@@ -484,13 +485,10 @@ function saveFavorite() {
 
 function renderFavorites() {
   const container = document.getElementById('favorites');
-  const favs = getFavorites();
-
   container.innerHTML = `<button onclick="saveFavorite()">⭐ Save Favorite</button>`;
-  favs.forEach(expr => {
+  getFavorites().forEach(expr => {
     const btn = document.createElement('button');
     btn.textContent = expr;
-    btn.title = 'Click to insert';
     btn.onclick = () => {
       screen.value = expr;
       updateBracketIndicator();
@@ -499,41 +497,37 @@ function renderFavorites() {
   });
 }
 
-// —————— Smart Voice Input ——————
-
+// ——— Voice Input ———
 function startVoice() {
   try {
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'en-US';
-
-    recognition.onresult = event => {
-      const spoken = event.results[0][0].transcript.toLowerCase();
+    recognition.onresult = e => {
+      const spoken = e.results[0][0].transcript.toLowerCase();
       const parsed = parseSpokenMath(spoken);
       screen.value += parsed;
       updateBracketIndicator();
     };
-
-    recognition.onerror = err => alert(`🎤 Voice error: ${err.error}`);
+    recognition.onerror = err => alert(`🎤 Error: ${err.error}`);
     recognition.start();
   } catch {
-    alert('❌ Voice recognition is not supported in this browser.');
+    alert('❌ Voice not supported in this browser.');
   }
 }
 
-function parseSpokenMath(spoken) {
-  return spoken
+function parseSpokenMath(text) {
+  return text
     .replace(/plus/g, '+')
     .replace(/minus/g, '-')
-    .replace(/(times|into|multiplied by)/g, '*')
+    .replace(/(times|into|multiply|multiplied by)/g, '*')
     .replace(/(divided by|over|by)/g, '/')
     .replace(/equals?/g, '=')
-    .replace(/[^\d+\-*/().]/g, '')
+    .replace(/[^0-9+\-*/().]/g, '')
     .replace(/\s+/g, '')
-    .replace(/([+\-*/])$/, ''); // Remove trailing operators
+    .replace(/([+\-*/])$/, '');
 }
 
-// —————— Theme Management ——————
-
+// ——— Theme ———
 function changeTheme(theme) {
   document.body.className = theme;
   themeSelect.value = theme;
@@ -542,18 +536,15 @@ function changeTheme(theme) {
 
 function autoSwitchTheme() {
   const hour = new Date().getHours();
-  const theme = (hour >= 7 && hour < 19) ? 'frost' : 'neon';
-  changeTheme(theme);
+  changeTheme((hour >= 7 && hour < 19) ? 'frost' : 'matrix');
 }
 
-// —————— Initialization ——————
-
+// ——— Init ———
 window.onload = () => {
   renderFavorites();
-  const savedTheme = localStorage.getItem('theme');
-  savedTheme ? changeTheme(savedTheme) : autoSwitchTheme();
+  const saved = localStorage.getItem('theme');
+  saved ? changeTheme(saved) : autoSwitchTheme();
 };
-
 
   </script>
 </body>
