@@ -377,14 +377,14 @@ input:focus {
 const screen = document.getElementById('screen');
 const themeSelect = document.getElementById('themeSelect');
 
-// ——— Utils ———
-const isValidExpression = expr => /^[\d+\-*/().\s]+$/.test(expr);
-const getBracketCount = text => ({
+// ========== UTILS ==========
+const isValidExpression = (expr) => /^[\d+\-*/().\s]+$/.test(expr);
+const getBracketCount = (text) => ({
   open: (text.match(/\(/g) || []).length,
   close: (text.match(/\)/g) || []).length,
 });
 
-// ——— Calculator Core ———
+// ========== CALCULATOR ==========
 function append(char) {
   screen.value += char;
   updateBracketIndicator();
@@ -405,32 +405,32 @@ function calculate() {
   if (!expression) return;
 
   try {
-    if (!isValidExpression(expression)) throw 'Invalid input';
+    if (!isValidExpression(expression)) throw new Error('Invalid input');
     const result = eval(expression);
-    if (!isFinite(result)) throw 'Invalid result';
+    if (!isFinite(result)) throw new Error('Invalid result');
 
     screen.value = result;
     addToHistory(expression, result);
-  } catch {
+  } catch (e) {
     screen.value = 'Error';
   }
 
   updateBracketIndicator();
 }
 
-// ——— Bracket Indicator ———
+// ========== BRACKET FEEDBACK ==========
 function updateBracketIndicator() {
   const { open, close } = getBracketCount(screen.value);
-  document.getElementById('bracketBtn').style.backgroundColor =
-    open !== close ? 'var(--danger)' : '';
+  const bracketBtn = document.getElementById('bracketBtn');
+  bracketBtn.style.backgroundColor = open !== close ? 'var(--danger)' : '';
 }
 
-// ——— History ———
-const historyArr = [];
+// ========== HISTORY ==========
+let historyArr = [];
 
 function addToHistory(expr, result) {
   const entry = `${expr} = ${result}`;
-  if (historyArr.length >= 10) historyArr.shift();
+  if (historyArr.length >= 20) historyArr.shift();
   historyArr.push(entry);
   renderHistory();
 }
@@ -438,31 +438,31 @@ function addToHistory(expr, result) {
 function renderHistory() {
   const container = document.getElementById('history');
   container.innerHTML = '';
-  [...historyArr].reverse().forEach(entry => {
-    const el = document.createElement('div');
-    el.textContent = entry;
-    el.title = 'Click to reuse';
-    el.onclick = () => {
+  historyArr.slice().reverse().forEach(entry => {
+    const div = document.createElement('div');
+    div.textContent = entry;
+    div.title = 'Click to reuse';
+    div.onclick = () => {
       screen.value = entry.split('=')[0].trim();
       updateBracketIndicator();
     };
-    container.appendChild(el);
+    container.appendChild(div);
   });
 }
 
 function copyResult() {
   const result = screen.value.trim();
-  if (result) {
-    navigator.clipboard.writeText(result)
-      .then(() => alert('✅ Copied!'))
-      .catch(() => alert('❌ Failed to copy.'));
-  }
+  if (!result) return;
+
+  navigator.clipboard.writeText(result)
+    .then(() => showAlert('✅ Copied!', 'success'))
+    .catch(() => showAlert('❌ Failed to copy', 'error'));
 }
 
-// ——— Favorites ———
+// ========== FAVORITES ==========
 function getFavorites() {
   try {
-    return JSON.parse(localStorage.getItem('favs')) || [];
+    return JSON.parse(localStorage.getItem('favorites') || '[]');
   } catch {
     return [];
   }
@@ -472,14 +472,14 @@ function saveFavorite() {
   const expr = screen.value.trim();
   if (!expr) return;
 
-  const favs = getFavorites();
+  let favs = getFavorites();
   if (!favs.includes(expr)) {
     favs.push(expr);
-    localStorage.setItem('favs', JSON.stringify(favs));
+    localStorage.setItem('favorites', JSON.stringify(favs));
     renderFavorites();
-    alert('⭐ Added to favorites!');
+    showAlert('⭐ Added to favorites!', 'success');
   } else {
-    alert('⚠️ Already in favorites.');
+    showAlert('⚠️ Already in favorites.', 'info');
   }
 }
 
@@ -497,7 +497,7 @@ function renderFavorites() {
   });
 }
 
-// ——— Voice Input ———
+// ========== VOICE INPUT ==========
 function startVoice() {
   try {
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -508,10 +508,10 @@ function startVoice() {
       screen.value += parsed;
       updateBracketIndicator();
     };
-    recognition.onerror = err => alert(`🎤 Error: ${err.error}`);
+    recognition.onerror = err => showAlert(`🎤 Error: ${err.error}`, 'error');
     recognition.start();
   } catch {
-    alert('❌ Voice not supported in this browser.');
+    showAlert('❌ Voice not supported.', 'error');
   }
 }
 
@@ -519,7 +519,7 @@ function parseSpokenMath(text) {
   return text
     .replace(/plus/g, '+')
     .replace(/minus/g, '-')
-    .replace(/(times|into|multiply|multiplied by)/g, '*')
+    .replace(/(times|multiply|into)/g, '*')
     .replace(/(divided by|over|by)/g, '/')
     .replace(/equals?/g, '=')
     .replace(/[^0-9+\-*/().]/g, '')
@@ -527,7 +527,7 @@ function parseSpokenMath(text) {
     .replace(/([+\-*/])$/, '');
 }
 
-// ——— Theme ———
+// ========== THEMES ==========
 function changeTheme(theme) {
   document.body.className = theme;
   themeSelect.value = theme;
@@ -536,14 +536,21 @@ function changeTheme(theme) {
 
 function autoSwitchTheme() {
   const hour = new Date().getHours();
-  changeTheme((hour >= 7 && hour < 19) ? 'frost' : 'matrix');
+  const defaultTheme = (hour >= 7 && hour < 19) ? 'frost' : 'matrix';
+  changeTheme(defaultTheme);
 }
 
-// ——— Init ———
+// ========== ALERT SYSTEM ==========
+function showAlert(msg, type) {
+  // You can customize this with a styled toast message
+  alert(msg);
+}
+
+// ========== INIT ==========
 window.onload = () => {
   renderFavorites();
-  const saved = localStorage.getItem('theme');
-  saved ? changeTheme(saved) : autoSwitchTheme();
+  const stored = localStorage.getItem('theme');
+  stored ? changeTheme(stored) : autoSwitchTheme();
 };
 
   </script>
