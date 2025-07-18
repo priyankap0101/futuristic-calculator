@@ -376,8 +376,10 @@ input:focus {
   <script>
 const screen = document.getElementById('screen');
 const themeSelect = document.getElementById('themeSelect');
+const bracketBtn = document.getElementById('bracketBtn');
+let historyArr = [];
 
-// ========== UTILS ==========
+// ========== UTILITIES ==========
 const isValidExpression = (expr) => /^[\d+\-*/().\s]+$/.test(expr);
 const getBracketCount = (text) => ({
   open: (text.match(/\(/g) || []).length,
@@ -411,23 +413,20 @@ function calculate() {
 
     screen.value = result;
     addToHistory(expression, result);
-  } catch (e) {
+  } catch {
     screen.value = 'Error';
   }
 
   updateBracketIndicator();
 }
 
-// ========== BRACKET FEEDBACK ==========
+// ========== BRACKETS ==========
 function updateBracketIndicator() {
   const { open, close } = getBracketCount(screen.value);
-  const bracketBtn = document.getElementById('bracketBtn');
   bracketBtn.style.backgroundColor = open !== close ? 'var(--danger)' : '';
 }
 
 // ========== HISTORY ==========
-let historyArr = [];
-
 function addToHistory(expr, result) {
   const entry = `${expr} = ${result}`;
   if (historyArr.length >= 20) historyArr.shift();
@@ -520,7 +519,7 @@ function parseSpokenMath(text) {
     .replace(/plus/g, '+')
     .replace(/minus/g, '-')
     .replace(/(times|multiply|into)/g, '*')
-    .replace(/(divided by|over|by)/g, '/')
+    .replace(/(divided by|by|over)/g, '/')
     .replace(/equals?/g, '=')
     .replace(/[^0-9+\-*/().]/g, '')
     .replace(/\s+/g, '')
@@ -540,17 +539,17 @@ function autoSwitchTheme() {
   changeTheme(defaultTheme);
 }
 
-// ========== ALERT SYSTEM ==========
-function showAlert(msg, type) {
-  // You can customize this with a styled toast message
-  alert(msg);
+// ========== ALERTS ==========
+function showAlert(message, type = 'info') {
+  // Placeholder for styled toast/notification logic
+  alert(message);
 }
 
 // ========== INIT ==========
 window.onload = () => {
   renderFavorites();
-  const stored = localStorage.getItem('theme');
-  stored ? changeTheme(stored) : autoSwitchTheme();
+  const storedTheme = localStorage.getItem('theme');
+  storedTheme ? changeTheme(storedTheme) : autoSwitchTheme();
 };
 
   </script>
