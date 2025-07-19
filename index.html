@@ -386,6 +386,11 @@ const getBracketCount = (text) => ({
   close: (text.match(/\)/g) || []).length,
 });
 
+const updateScreen = (value) => {
+  screen.value = value;
+  updateBracketIndicator();
+};
+
 // ========== CALCULATOR ==========
 function append(char) {
   screen.value += char;
@@ -393,31 +398,25 @@ function append(char) {
 }
 
 function del() {
-  screen.value = screen.value.slice(0, -1);
-  updateBracketIndicator();
+  updateScreen(screen.value.slice(0, -1));
 }
 
 function clearScreen() {
-  screen.value = '';
-  updateBracketIndicator();
+  updateScreen('');
 }
 
 function calculate() {
   const expression = screen.value.trim();
-  if (!expression) return;
+  if (!expression || !isValidExpression(expression)) return updateScreen('Error');
 
   try {
-    if (!isValidExpression(expression)) throw new Error('Invalid input');
     const result = eval(expression);
     if (!isFinite(result)) throw new Error('Invalid result');
-
-    screen.value = result;
+    updateScreen(result);
     addToHistory(expression, result);
   } catch {
-    screen.value = 'Error';
+    updateScreen('Error');
   }
-
-  updateBracketIndicator();
 }
 
 // ========== BRACKETS ==========
@@ -441,10 +440,7 @@ function renderHistory() {
     const div = document.createElement('div');
     div.textContent = entry;
     div.title = 'Click to reuse';
-    div.onclick = () => {
-      screen.value = entry.split('=')[0].trim();
-      updateBracketIndicator();
-    };
+    div.onclick = () => updateScreen(entry.split('=')[0].trim());
     container.appendChild(div);
   });
 }
@@ -488,10 +484,7 @@ function renderFavorites() {
   getFavorites().forEach(expr => {
     const btn = document.createElement('button');
     btn.textContent = expr;
-    btn.onclick = () => {
-      screen.value = expr;
-      updateBracketIndicator();
-    };
+    btn.onclick = () => updateScreen(expr);
     container.appendChild(btn);
   });
 }
@@ -501,13 +494,15 @@ function startVoice() {
   try {
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'en-US';
-    recognition.onresult = e => {
+
+    recognition.onresult = (e) => {
       const spoken = e.results[0][0].transcript.toLowerCase();
       const parsed = parseSpokenMath(spoken);
       screen.value += parsed;
       updateBracketIndicator();
     };
-    recognition.onerror = err => showAlert(`🎤 Error: ${err.error}`, 'error');
+
+    recognition.onerror = (err) => showAlert(`🎤 Error: ${err.error}`, 'error');
     recognition.start();
   } catch {
     showAlert('❌ Voice not supported.', 'error');
@@ -541,7 +536,7 @@ function autoSwitchTheme() {
 
 // ========== ALERTS ==========
 function showAlert(message, type = 'info') {
-  // Placeholder for styled toast/notification logic
+  // TODO: Replace with a styled toast system
   alert(message);
 }
 
