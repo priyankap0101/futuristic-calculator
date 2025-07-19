@@ -379,61 +379,57 @@ const themeSelect = document.getElementById('themeSelect');
 const bracketBtn = document.getElementById('bracketBtn');
 let historyArr = [];
 
-// ========== Utility Functions ==========
+// ========== UTILITIES ==========
 const isValidExpression = (expr) => /^[\d+\-*/().\s]+$/.test(expr);
-
-const countBrackets = (text) => ({
+const getBracketCount = (text) => ({
   open: (text.match(/\(/g) || []).length,
   close: (text.match(/\)/g) || []).length,
 });
 
-const showAlert = (msg, type = 'info') => {
-  // Replace this with toast-style UI for better UX
-  alert(msg);
-};
-
-// ========== Calculator Logic ==========
-function appendCharacter(char) {
+// ========== CALCULATOR ==========
+function append(char) {
   screen.value += char;
   updateBracketIndicator();
 }
 
-function deleteLastChar() {
+function del() {
   screen.value = screen.value.slice(0, -1);
   updateBracketIndicator();
 }
 
-function clearInput() {
+function clearScreen() {
   screen.value = '';
   updateBracketIndicator();
 }
 
-function evaluateExpression() {
-  const expr = screen.value.trim();
-  if (!expr) return;
+function calculate() {
+  const expression = screen.value.trim();
+  if (!expression) return;
 
   try {
-    if (!isValidExpression(expr)) throw new Error('Invalid characters');
-    const result = eval(expr);
+    if (!isValidExpression(expression)) throw new Error('Invalid input');
+    const result = eval(expression);
     if (!isFinite(result)) throw new Error('Invalid result');
+
     screen.value = result;
-    addToHistory(expr, result);
-  } catch {
+    addToHistory(expression, result);
+  } catch (err) {
     screen.value = 'Error';
+    showAlert('⚠️ Invalid expression!', 'error');
   }
 
   updateBracketIndicator();
 }
 
-// ========== Bracket Indicator ==========
+// ========== BRACKETS ==========
 function updateBracketIndicator() {
-  const { open, close } = countBrackets(screen.value);
-  bracketBtn.style.backgroundColor = (open !== close) ? 'var(--danger)' : '';
+  const { open, close } = getBracketCount(screen.value);
+  bracketBtn.style.backgroundColor = open !== close ? 'var(--danger)' : '';
 }
 
-// ========== History ==========
-function addToHistory(expression, result) {
-  const entry = `${expression} = ${result}`;
+// ========== HISTORY ==========
+function addToHistory(expr, result) {
+  const entry = `${expr} = ${result}`;
   if (historyArr.length >= 20) historyArr.shift();
   historyArr.push(entry);
   renderHistory();
@@ -454,15 +450,16 @@ function renderHistory() {
   });
 }
 
-function copyResultToClipboard() {
+function copyResult() {
   const result = screen.value.trim();
   if (!result) return;
+
   navigator.clipboard.writeText(result)
-    .then(() => showAlert('✅ Copied to clipboard!', 'success'))
-    .catch(() => showAlert('❌ Copy failed.', 'error'));
+    .then(() => showAlert('✅ Copied!', 'success'))
+    .catch(() => showAlert('❌ Failed to copy', 'error'));
 }
 
-// ========== Favorites ==========
+// ========== FAVORITES ==========
 function getFavorites() {
   try {
     return JSON.parse(localStorage.getItem('favorites') || '[]');
@@ -471,7 +468,7 @@ function getFavorites() {
   }
 }
 
-function saveToFavorites() {
+function saveFavorite() {
   const expr = screen.value.trim();
   if (!expr) return;
 
@@ -482,13 +479,13 @@ function saveToFavorites() {
     renderFavorites();
     showAlert('⭐ Added to favorites!', 'success');
   } else {
-    showAlert('⚠️ Already a favorite.', 'info');
+    showAlert('⚠️ Already in favorites.', 'info');
   }
 }
 
 function renderFavorites() {
   const container = document.getElementById('favorites');
-  container.innerHTML = `<button onclick="saveToFavorites()">⭐ Save Favorite</button>`;
+  container.innerHTML = `<button onclick="saveFavorite()">⭐ Save Favorite</button>`;
   getFavorites().forEach(expr => {
     const btn = document.createElement('button');
     btn.textContent = expr;
@@ -500,25 +497,30 @@ function renderFavorites() {
   });
 }
 
-// ========== Voice Input ==========
-function startVoiceInput() {
+// ========== VOICE INPUT ==========
+function startVoice() {
   try {
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'en-US';
+
     recognition.onresult = (e) => {
       const spoken = e.results[0][0].transcript.toLowerCase();
-      const parsed = parseVoiceToExpression(spoken);
+      const parsed = parseSpokenMath(spoken);
       screen.value += parsed;
       updateBracketIndicator();
     };
-    recognition.onerror = (e) => showAlert(`🎤 Error: ${e.error}`, 'error');
+
+    recognition.onerror = (err) => {
+      showAlert(`🎤 Voice Error: ${err.error}`, 'error');
+    };
+
     recognition.start();
   } catch {
-    showAlert('❌ Voice input not supported in this browser.', 'error');
+    showAlert('❌ Voice input not supported on this browser.', 'error');
   }
 }
 
-function parseVoiceToExpression(text) {
+function parseSpokenMath(text) {
   return text
     .replace(/plus/g, '+')
     .replace(/minus/g, '-')
@@ -527,29 +529,33 @@ function parseVoiceToExpression(text) {
     .replace(/equals?/g, '=')
     .replace(/[^0-9+\-*/().]/g, '')
     .replace(/\s+/g, '')
-    .replace(/([+\-*/])$/, '');
+    .replace(/([+\-*/])$/, ''); // Remove trailing operator
 }
 
-// ========== Themes ==========
-function applyTheme(themeName) {
-  document.body.className = themeName;
-  themeSelect.value = themeName;
-  localStorage.setItem('theme', themeName);
+// ========== THEMES ==========
+function changeTheme(theme) {
+  document.body.className = theme;
+  themeSelect.value = theme;
+  localStorage.setItem('theme', theme);
 }
 
-function autoThemeSwitch() {
+function autoSwitchTheme() {
   const hour = new Date().getHours();
-  const theme = (hour >= 7 && hour < 19) ? 'frost' : 'matrix';
-  applyTheme(theme);
+  const defaultTheme = (hour >= 7 && hour < 19) ? 'frost' : 'matrix';
+  changeTheme(defaultTheme);
 }
 
-// ========== Initialization ==========
+// ========== ALERTS ==========
+function showAlert(message, type = 'info') {
+  // Future: replace with custom toast popup
+  alert(message);
+}
+
+// ========== INIT ==========
 window.onload = () => {
   renderFavorites();
-  renderHistory();
-
-  const savedTheme = localStorage.getItem('theme');
-  savedTheme ? applyTheme(savedTheme) : autoThemeSwitch();
+  const storedTheme = localStorage.getItem('theme');
+  storedTheme ? changeTheme(storedTheme) : autoSwitchTheme();
 };
 
   </script>
