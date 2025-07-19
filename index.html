@@ -374,62 +374,64 @@ input:focus {
   </div>
 
   <script>
-// ========== DOM Elements ==========
+// === DOM Elements ===
 const screen = document.getElementById('screen');
 const themeSelect = document.getElementById('themeSelect');
 const bracketBtn = document.getElementById('bracketBtn');
+const historyDiv = document.getElementById('history');
+const favoritesDiv = document.getElementById('favorites');
 
 let historyArr = [];
 
-// ========== Utilities ==========
-const isValidExpression = expr => /^[\d+\-*/().\s]+$/.test(expr);
-const countBrackets = text => ({
-  open: (text.match(/\(/g) || []).length,
-  close: (text.match(/\)/g) || []).length,
-});
+// === Expression Utilities ===
+const isValidMath = expr => /^[\d+\-*/().\s]+$/.test(expr);
+const isBalancedBrackets = expr => {
+  const open = (expr.match(/\(/g) || []).length;
+  const close = (expr.match(/\)/g) || []).length;
+  return open === close;
+};
 
-// ========== Calculator Logic ==========
+// === Calculator Functions ===
 const append = char => {
   screen.value += char;
-  updateBracketIndicator();
+  updateBracketButton();
 };
 
 const del = () => {
   screen.value = screen.value.slice(0, -1);
-  updateBracketIndicator();
+  updateBracketButton();
 };
 
 const clearScreen = () => {
   screen.value = '';
-  updateBracketIndicator();
+  updateBracketButton();
 };
 
 const calculate = () => {
-  const expression = screen.value.trim();
-  if (!expression) return;
-
-  try {
-    if (!isValidExpression(expression)) throw new Error('Invalid input');
-    const result = eval(expression);
-    if (!isFinite(result)) throw new Error('Invalid result');
-
-    screen.value = result;
-    addToHistory(expression, result);
-  } catch {
-    screen.value = 'Error';
-    showAlert('❌ Invalid expression', 'error');
+  const expr = screen.value.trim();
+  if (!expr || !isBalancedBrackets(expr) || !isValidMath(expr)) {
+    return showAlert('❌ Invalid Expression', 'error');
   }
 
-  updateBracketIndicator();
+  try {
+    const result = eval(expr);
+    if (!isFinite(result)) throw Error('Infinity');
+    screen.value = result;
+    addToHistory(expr, result);
+  } catch {
+    screen.value = 'Error';
+    showAlert('⚠️ Error evaluating expression', 'error');
+  }
+
+  updateBracketButton();
 };
 
-// ========== Bracket UI Feedback ==========
-const updateBracketIndicator = () => {
-  const { open, close } = countBrackets(screen.value);
-  bracketBtn.style.backgroundColor = open !== close ? 'var(--danger)' : '';
+// === Bracket Feedback ===
+const updateBracketButton = () => {
+  bracketBtn.style.backgroundColor = isBalancedBrackets(screen.value) ? '' : 'var(--danger)';
 };
 
-// ========== History ==========
+// === History Management ===
 const addToHistory = (expr, result) => {
   const entry = `${expr} = ${result}`;
   if (historyArr.length >= 20) historyArr.shift();
@@ -438,33 +440,32 @@ const addToHistory = (expr, result) => {
 };
 
 const renderHistory = () => {
-  const container = document.getElementById('history');
-  container.innerHTML = '';
-  historyArr.slice().reverse().forEach(entry => {
-    const div = document.createElement('div');
-    div.textContent = entry;
-    div.title = 'Click to reuse';
-    div.onclick = () => {
-      screen.value = entry.split('=')[0].trim();
-      updateBracketIndicator();
+  historyDiv.innerHTML = '';
+  [...historyArr].reverse().forEach(item => {
+    const el = document.createElement('div');
+    el.textContent = item;
+    el.title = 'Click to reuse';
+    el.onclick = () => {
+      screen.value = item.split('=')[0].trim();
+      updateBracketButton();
     };
-    container.appendChild(div);
+    historyDiv.appendChild(el);
   });
 };
 
+// === Clipboard Copy ===
 const copyResult = () => {
-  const result = screen.value.trim();
-  if (!result) return;
-
-  navigator.clipboard.writeText(result)
+  const val = screen.value.trim();
+  if (!val) return;
+  navigator.clipboard.writeText(val)
     .then(() => showAlert('✅ Copied to clipboard', 'success'))
     .catch(() => showAlert('❌ Clipboard error', 'error'));
 };
 
-// ========== Favorites ==========
+// === Favorites Management ===
 const getFavorites = () => {
   try {
-    return JSON.parse(localStorage.getItem('favorites')) || [];
+    return JSON.parse(localStorage.getItem('favorites') || '[]');
   } catch {
     return [];
   }
@@ -474,36 +475,35 @@ const saveFavorite = () => {
   const expr = screen.value.trim();
   if (!expr) return;
 
-  const favs = getFavorites();
+  let favs = getFavorites();
   if (!favs.includes(expr)) {
     favs.push(expr);
     localStorage.setItem('favorites', JSON.stringify(favs));
     renderFavorites();
-    showAlert('⭐ Saved to favorites!', 'success');
+    showAlert('⭐ Added to favorites');
   } else {
-    showAlert('⚠️ Already in favorites.', 'info');
+    showAlert('⚠️ Already in favorites');
   }
 };
 
 const renderFavorites = () => {
-  const container = document.getElementById('favorites');
-  container.innerHTML = `<button onclick="saveFavorite()">⭐ Save Favorite</button>`;
+  favoritesDiv.innerHTML = `<button onclick="saveFavorite()">⭐ Save Favorite</button>`;
   getFavorites().forEach(expr => {
     const btn = document.createElement('button');
     btn.textContent = expr;
     btn.onclick = () => {
       screen.value = expr;
-      updateBracketIndicator();
+      updateBracketButton();
     };
-    container.appendChild(btn);
+    favoritesDiv.appendChild(btn);
   });
 };
 
-// ========== Voice Input ==========
+// === Voice Input ===
 const startVoice = () => {
   try {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) throw new Error();
+    if (!SpeechRecognition) throw Error();
 
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
@@ -512,33 +512,29 @@ const startVoice = () => {
       const spoken = e.results[0][0].transcript.toLowerCase();
       const parsed = parseSpokenMath(spoken);
       screen.value += parsed;
-      updateBracketIndicator();
+      updateBracketButton();
     };
 
-    recognition.onerror = e => {
-      showAlert(`🎤 Error: ${e.error}`, 'error');
-    };
-
+    recognition.onerror = e => showAlert(`🎤 Error: ${e.error}`, 'error');
     recognition.start();
   } catch {
-    showAlert('🎤 Voice recognition not supported', 'error');
+    showAlert('🎤 Voice not supported in this browser', 'error');
   }
 };
 
-const parseSpokenMath = text => {
+const parseSpokenMath = (text) => {
   return text
     .replace(/plus/g, '+')
     .replace(/minus/g, '-')
-    .replace(/times|into|multiply/g, '*')
-    .replace(/divided by|divide|over/g, '/')
+    .replace(/(multiply|times|into)/g, '*')
+    .replace(/(divide|over|divided by)/g, '/')
     .replace(/equals?/g, '=')
-    .replace(/[^0-9+\-*/().]/g, '')
-    .replace(/\s+/g, '')
-    .replace(/([+\-*/])$/, ''); // remove trailing operator
+    .replace(/[^\d+\-*/().]/g, '')
+    .replace(/\s+/g, '');
 };
 
-// ========== Themes ==========
-const changeTheme = theme => {
+// === Theme Management ===
+const changeTheme = (theme) => {
   document.body.className = theme;
   themeSelect.value = theme;
   localStorage.setItem('theme', theme);
@@ -546,20 +542,21 @@ const changeTheme = theme => {
 
 const autoSwitchTheme = () => {
   const hour = new Date().getHours();
-  const preferred = (hour >= 7 && hour < 19) ? 'frost' : 'matrix';
-  changeTheme(preferred);
+  const fallback = (hour >= 6 && hour < 18) ? 'light' : 'dark';
+  const theme = localStorage.getItem('theme') || fallback;
+  changeTheme(theme);
 };
 
-// ========== Alerts ==========
+// === Alerts (basic) ===
 const showAlert = (msg, type = 'info') => {
-  alert(msg); // Replace with toast or modal later
+  // Replace this with a toast or modal for better UX later
+  alert(msg);
 };
 
-// ========== Initialize ==========
+// === Init ===
 window.onload = () => {
   renderFavorites();
-  const storedTheme = localStorage.getItem('theme');
-  storedTheme ? changeTheme(storedTheme) : autoSwitchTheme();
+  autoSwitchTheme();
 };
 
   </script>
