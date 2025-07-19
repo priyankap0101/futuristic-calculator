@@ -374,35 +374,37 @@ input:focus {
   </div>
 
   <script>
+// ========== DOM Elements ==========
 const screen = document.getElementById('screen');
 const themeSelect = document.getElementById('themeSelect');
 const bracketBtn = document.getElementById('bracketBtn');
+
 let historyArr = [];
 
-// ========== UTILITIES ==========
-const isValidExpression = (expr) => /^[\d+\-*/().\s]+$/.test(expr);
-const getBracketCount = (text) => ({
+// ========== Utilities ==========
+const isValidExpression = expr => /^[\d+\-*/().\s]+$/.test(expr);
+const countBrackets = text => ({
   open: (text.match(/\(/g) || []).length,
   close: (text.match(/\)/g) || []).length,
 });
 
-// ========== CALCULATOR ==========
-function append(char) {
+// ========== Calculator Logic ==========
+const append = char => {
   screen.value += char;
   updateBracketIndicator();
-}
+};
 
-function del() {
+const del = () => {
   screen.value = screen.value.slice(0, -1);
   updateBracketIndicator();
-}
+};
 
-function clearScreen() {
+const clearScreen = () => {
   screen.value = '';
   updateBracketIndicator();
-}
+};
 
-function calculate() {
+const calculate = () => {
   const expression = screen.value.trim();
   if (!expression) return;
 
@@ -413,29 +415,29 @@ function calculate() {
 
     screen.value = result;
     addToHistory(expression, result);
-  } catch (err) {
+  } catch {
     screen.value = 'Error';
-    showAlert('⚠️ Invalid expression!', 'error');
+    showAlert('❌ Invalid expression', 'error');
   }
 
   updateBracketIndicator();
-}
+};
 
-// ========== BRACKETS ==========
-function updateBracketIndicator() {
-  const { open, close } = getBracketCount(screen.value);
+// ========== Bracket UI Feedback ==========
+const updateBracketIndicator = () => {
+  const { open, close } = countBrackets(screen.value);
   bracketBtn.style.backgroundColor = open !== close ? 'var(--danger)' : '';
-}
+};
 
-// ========== HISTORY ==========
-function addToHistory(expr, result) {
+// ========== History ==========
+const addToHistory = (expr, result) => {
   const entry = `${expr} = ${result}`;
   if (historyArr.length >= 20) historyArr.shift();
   historyArr.push(entry);
   renderHistory();
-}
+};
 
-function renderHistory() {
+const renderHistory = () => {
   const container = document.getElementById('history');
   container.innerHTML = '';
   historyArr.slice().reverse().forEach(entry => {
@@ -448,27 +450,27 @@ function renderHistory() {
     };
     container.appendChild(div);
   });
-}
+};
 
-function copyResult() {
+const copyResult = () => {
   const result = screen.value.trim();
   if (!result) return;
 
   navigator.clipboard.writeText(result)
-    .then(() => showAlert('✅ Copied!', 'success'))
-    .catch(() => showAlert('❌ Failed to copy', 'error'));
-}
+    .then(() => showAlert('✅ Copied to clipboard', 'success'))
+    .catch(() => showAlert('❌ Clipboard error', 'error'));
+};
 
-// ========== FAVORITES ==========
-function getFavorites() {
+// ========== Favorites ==========
+const getFavorites = () => {
   try {
-    return JSON.parse(localStorage.getItem('favorites') || '[]');
+    return JSON.parse(localStorage.getItem('favorites')) || [];
   } catch {
     return [];
   }
-}
+};
 
-function saveFavorite() {
+const saveFavorite = () => {
   const expr = screen.value.trim();
   if (!expr) return;
 
@@ -477,13 +479,13 @@ function saveFavorite() {
     favs.push(expr);
     localStorage.setItem('favorites', JSON.stringify(favs));
     renderFavorites();
-    showAlert('⭐ Added to favorites!', 'success');
+    showAlert('⭐ Saved to favorites!', 'success');
   } else {
     showAlert('⚠️ Already in favorites.', 'info');
   }
-}
+};
 
-function renderFavorites() {
+const renderFavorites = () => {
   const container = document.getElementById('favorites');
   container.innerHTML = `<button onclick="saveFavorite()">⭐ Save Favorite</button>`;
   getFavorites().forEach(expr => {
@@ -495,63 +497,65 @@ function renderFavorites() {
     };
     container.appendChild(btn);
   });
-}
+};
 
-// ========== VOICE INPUT ==========
-function startVoice() {
+// ========== Voice Input ==========
+const startVoice = () => {
   try {
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) throw new Error();
+
+    const recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
 
-    recognition.onresult = (e) => {
+    recognition.onresult = e => {
       const spoken = e.results[0][0].transcript.toLowerCase();
       const parsed = parseSpokenMath(spoken);
       screen.value += parsed;
       updateBracketIndicator();
     };
 
-    recognition.onerror = (err) => {
-      showAlert(`🎤 Voice Error: ${err.error}`, 'error');
+    recognition.onerror = e => {
+      showAlert(`🎤 Error: ${e.error}`, 'error');
     };
 
     recognition.start();
   } catch {
-    showAlert('❌ Voice input not supported on this browser.', 'error');
+    showAlert('🎤 Voice recognition not supported', 'error');
   }
-}
+};
 
-function parseSpokenMath(text) {
+const parseSpokenMath = text => {
   return text
     .replace(/plus/g, '+')
     .replace(/minus/g, '-')
-    .replace(/(times|multiply|into)/g, '*')
-    .replace(/(divided by|by|over)/g, '/')
+    .replace(/times|into|multiply/g, '*')
+    .replace(/divided by|divide|over/g, '/')
     .replace(/equals?/g, '=')
     .replace(/[^0-9+\-*/().]/g, '')
     .replace(/\s+/g, '')
-    .replace(/([+\-*/])$/, ''); // Remove trailing operator
-}
+    .replace(/([+\-*/])$/, ''); // remove trailing operator
+};
 
-// ========== THEMES ==========
-function changeTheme(theme) {
+// ========== Themes ==========
+const changeTheme = theme => {
   document.body.className = theme;
   themeSelect.value = theme;
   localStorage.setItem('theme', theme);
-}
+};
 
-function autoSwitchTheme() {
+const autoSwitchTheme = () => {
   const hour = new Date().getHours();
-  const defaultTheme = (hour >= 7 && hour < 19) ? 'frost' : 'matrix';
-  changeTheme(defaultTheme);
-}
+  const preferred = (hour >= 7 && hour < 19) ? 'frost' : 'matrix';
+  changeTheme(preferred);
+};
 
-// ========== ALERTS ==========
-function showAlert(message, type = 'info') {
-  // Future: replace with custom toast popup
-  alert(message);
-}
+// ========== Alerts ==========
+const showAlert = (msg, type = 'info') => {
+  alert(msg); // Replace with toast or modal later
+};
 
-// ========== INIT ==========
+// ========== Initialize ==========
 window.onload = () => {
   renderFavorites();
   const storedTheme = localStorage.getItem('theme');
