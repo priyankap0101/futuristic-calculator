@@ -379,55 +379,61 @@ const themeSelect = document.getElementById('themeSelect');
 const bracketBtn = document.getElementById('bracketBtn');
 let historyArr = [];
 
-// ========== UTILITIES ==========
+// ========== Utility Functions ==========
 const isValidExpression = (expr) => /^[\d+\-*/().\s]+$/.test(expr);
-const getBracketCount = (text) => ({
+
+const countBrackets = (text) => ({
   open: (text.match(/\(/g) || []).length,
   close: (text.match(/\)/g) || []).length,
 });
 
-const updateScreen = (value) => {
-  screen.value = value;
-  updateBracketIndicator();
+const showAlert = (msg, type = 'info') => {
+  // Replace this with toast-style UI for better UX
+  alert(msg);
 };
 
-// ========== CALCULATOR ==========
-function append(char) {
+// ========== Calculator Logic ==========
+function appendCharacter(char) {
   screen.value += char;
   updateBracketIndicator();
 }
 
-function del() {
-  updateScreen(screen.value.slice(0, -1));
+function deleteLastChar() {
+  screen.value = screen.value.slice(0, -1);
+  updateBracketIndicator();
 }
 
-function clearScreen() {
-  updateScreen('');
+function clearInput() {
+  screen.value = '';
+  updateBracketIndicator();
 }
 
-function calculate() {
-  const expression = screen.value.trim();
-  if (!expression || !isValidExpression(expression)) return updateScreen('Error');
+function evaluateExpression() {
+  const expr = screen.value.trim();
+  if (!expr) return;
 
   try {
-    const result = eval(expression);
+    if (!isValidExpression(expr)) throw new Error('Invalid characters');
+    const result = eval(expr);
     if (!isFinite(result)) throw new Error('Invalid result');
-    updateScreen(result);
-    addToHistory(expression, result);
+    screen.value = result;
+    addToHistory(expr, result);
   } catch {
-    updateScreen('Error');
+    screen.value = 'Error';
   }
+
+  updateBracketIndicator();
 }
 
-// ========== BRACKETS ==========
+// ========== Bracket Indicator ==========
 function updateBracketIndicator() {
-  const { open, close } = getBracketCount(screen.value);
-  bracketBtn.style.backgroundColor = open !== close ? 'var(--danger)' : '';
+  const { open, close } = countBrackets(screen.value);
+  bracketBtn.style.backgroundColor = (open !== close) ? 'var(--danger)' : '';
 }
 
-// ========== HISTORY ==========
-function addToHistory(expr, result) {
-  const entry = `${expr} = ${result}`;
+// ========== History ==========
+function addToHistory(expression, result) {
+  const entry = `${expression} = ${result}`;
   if (historyArr.length >= 20) historyArr.shift();
   historyArr.push(entry);
   renderHistory();
@@ -440,21 +446,23 @@ function renderHistory() {
     const div = document.createElement('div');
     div.textContent = entry;
     div.title = 'Click to reuse';
-    div.onclick = () => updateScreen(entry.split('=')[0].trim());
+    div.onclick = () => {
+      screen.value = entry.split('=')[0].trim();
+      updateBracketIndicator();
+    };
     container.appendChild(div);
   });
 }
 
-function copyResult() {
+function copyResultToClipboard() {
   const result = screen.value.trim();
   if (!result) return;
-
   navigator.clipboard.writeText(result)
-    .then(() => showAlert('✅ Copied!', 'success'))
-    .catch(() => showAlert('❌ Failed to copy', 'error'));
+    .then(() => showAlert('✅ Copied to clipboard!', 'success'))
+    .catch(() => showAlert('❌ Copy failed.', 'error'));
 }
 
-// ========== FAVORITES ==========
+// ========== Favorites ==========
 function getFavorites() {
   try {
     return JSON.parse(localStorage.getItem('favorites') || '[]');
@@ -463,53 +471,54 @@ function getFavorites() {
   }
 }
 
-function saveFavorite() {
+function saveToFavorites() {
   const expr = screen.value.trim();
   if (!expr) return;
 
-  let favs = getFavorites();
+  const favs = getFavorites();
   if (!favs.includes(expr)) {
     favs.push(expr);
     localStorage.setItem('favorites', JSON.stringify(favs));
     renderFavorites();
     showAlert('⭐ Added to favorites!', 'success');
   } else {
-    showAlert('⚠️ Already in favorites.', 'info');
+    showAlert('⚠️ Already a favorite.', 'info');
   }
 }
 
 function renderFavorites() {
   const container = document.getElementById('favorites');
-  container.innerHTML = `<button onclick="saveFavorite()">⭐ Save Favorite</button>`;
+  container.innerHTML = `<button onclick="saveToFavorites()">⭐ Save Favorite</button>`;
   getFavorites().forEach(expr => {
     const btn = document.createElement('button');
     btn.textContent = expr;
-    btn.onclick = () => updateScreen(expr);
+    btn.onclick = () => {
+      screen.value = expr;
+      updateBracketIndicator();
+    };
     container.appendChild(btn);
   });
 }
 
-// ========== VOICE INPUT ==========
-function startVoice() {
+// ========== Voice Input ==========
+function startVoiceInput() {
   try {
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'en-US';
-
     recognition.onresult = (e) => {
       const spoken = e.results[0][0].transcript.toLowerCase();
-      const parsed = parseSpokenMath(spoken);
+      const parsed = parseVoiceToExpression(spoken);
       screen.value += parsed;
       updateBracketIndicator();
     };
-
-    recognition.onerror = (err) => showAlert(`🎤 Error: ${err.error}`, 'error');
+    recognition.onerror = (e) => showAlert(`🎤 Error: ${e.error}`, 'error');
     recognition.start();
   } catch {
-    showAlert('❌ Voice not supported.', 'error');
+    showAlert('❌ Voice input not supported in this browser.', 'error');
   }
 }
 
-function parseSpokenMath(text) {
+function parseVoiceToExpression(text) {
   return text
     .replace(/plus/g, '+')
     .replace(/minus/g, '-')
@@ -521,30 +530,26 @@ function parseSpokenMath(text) {
     .replace(/([+\-*/])$/, '');
 }
 
-// ========== THEMES ==========
-function changeTheme(theme) {
-  document.body.className = theme;
-  themeSelect.value = theme;
-  localStorage.setItem('theme', theme);
+// ========== Themes ==========
+function applyTheme(themeName) {
+  document.body.className = themeName;
+  themeSelect.value = themeName;
+  localStorage.setItem('theme', themeName);
 }
 
-function autoSwitchTheme() {
+function autoThemeSwitch() {
   const hour = new Date().getHours();
-  const defaultTheme = (hour >= 7 && hour < 19) ? 'frost' : 'matrix';
-  changeTheme(defaultTheme);
+  const theme = (hour >= 7 && hour < 19) ? 'frost' : 'matrix';
+  applyTheme(theme);
 }
 
-// ========== ALERTS ==========
-function showAlert(message, type = 'info') {
-  // TODO: Replace with a styled toast system
-  alert(message);
-}
-
-// ========== INIT ==========
+// ========== Initialization ==========
 window.onload = () => {
   renderFavorites();
-  const storedTheme = localStorage.getItem('theme');
-  storedTheme ? changeTheme(storedTheme) : autoSwitchTheme();
+  renderHistory();
+
+  const savedTheme = localStorage.getItem('theme');
+  savedTheme ? applyTheme(savedTheme) : autoThemeSwitch();
 };
 
   </script>
