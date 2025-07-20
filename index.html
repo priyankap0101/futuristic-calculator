@@ -383,86 +383,90 @@ const favoritesDiv = document.getElementById('favorites');
 
 let historyArr = [];
 
-// === Expression Utilities ===
+// === Expression Validators ===
 const isValidMath = expr => /^[\d+\-*/().\s]+$/.test(expr);
-const isBalancedBrackets = expr => {
-  const open = (expr.match(/\(/g) || []).length;
-  const close = (expr.match(/\)/g) || []).length;
-  return open === close;
+const isBalanced = expr => {
+  let balance = 0;
+  for (let char of expr) {
+    if (char === '(') balance++;
+    else if (char === ')') balance--;
+    if (balance < 0) return false;
+  }
+  return balance === 0;
 };
 
-// === Calculator Functions ===
+// === Calculator Logic ===
 const append = char => {
   screen.value += char;
-  updateBracketButton();
+  highlightUnbalanced();
 };
 
 const del = () => {
   screen.value = screen.value.slice(0, -1);
-  updateBracketButton();
+  highlightUnbalanced();
 };
 
 const clearScreen = () => {
   screen.value = '';
-  updateBracketButton();
+  highlightUnbalanced();
 };
 
 const calculate = () => {
   const expr = screen.value.trim();
-  if (!expr || !isBalancedBrackets(expr) || !isValidMath(expr)) {
+  if (!expr || !isBalanced(expr) || !isValidMath(expr)) {
     return showAlert('❌ Invalid Expression', 'error');
   }
 
   try {
     const result = eval(expr);
-    if (!isFinite(result)) throw Error('Infinity');
+    if (!isFinite(result)) throw new Error('Non-finite result');
     screen.value = result;
-    addToHistory(expr, result);
+    saveToHistory(expr, result);
   } catch {
     screen.value = 'Error';
-    showAlert('⚠️ Error evaluating expression', 'error');
+    showAlert('⚠️ Evaluation Error', 'error');
   }
 
-  updateBracketButton();
+  highlightUnbalanced();
 };
 
-// === Bracket Feedback ===
-const updateBracketButton = () => {
-  bracketBtn.style.backgroundColor = isBalancedBrackets(screen.value) ? '' : 'var(--danger)';
+const highlightUnbalanced = () => {
+  bracketBtn.style.backgroundColor = isBalanced(screen.value) ? '' : 'var(--danger)';
 };
 
-// === History Management ===
-const addToHistory = (expr, result) => {
+// === History Handling ===
+const saveToHistory = (expr, result) => {
   const entry = `${expr} = ${result}`;
   if (historyArr.length >= 20) historyArr.shift();
   historyArr.push(entry);
-  renderHistory();
+  updateHistory();
 };
 
-const renderHistory = () => {
+const updateHistory = () => {
   historyDiv.innerHTML = '';
-  [...historyArr].reverse().forEach(item => {
-    const el = document.createElement('div');
-    el.textContent = item;
-    el.title = 'Click to reuse';
-    el.onclick = () => {
-      screen.value = item.split('=')[0].trim();
-      updateBracketButton();
+  [...historyArr].reverse().forEach(entry => {
+    const div = document.createElement('div');
+    div.textContent = entry;
+    div.title = 'Click to reuse';
+    div.onclick = () => {
+      screen.value = entry.split('=')[0].trim();
+      highlightUnbalanced();
     };
-    historyDiv.appendChild(el);
+    historyDiv.appendChild(div);
   });
 };
 
 // === Clipboard Copy ===
 const copyResult = () => {
   const val = screen.value.trim();
-  if (!val) return;
-  navigator.clipboard.writeText(val)
-    .then(() => showAlert('✅ Copied to clipboard', 'success'))
-    .catch(() => showAlert('❌ Clipboard error', 'error'));
+  if (val) {
+    navigator.clipboard.writeText(val)
+      .then(() => showAlert('✅ Copied to clipboard', 'success'))
+      .catch(() => showAlert('❌ Copy failed', 'error'));
+  }
 };
 
-// === Favorites Management ===
+// === Favorites Handling ===
 const getFavorites = () => {
   try {
     return JSON.parse(localStorage.getItem('favorites') || '[]');
@@ -479,27 +483,27 @@ const saveFavorite = () => {
   if (!favs.includes(expr)) {
     favs.push(expr);
     localStorage.setItem('favorites', JSON.stringify(favs));
-    renderFavorites();
-    showAlert('⭐ Added to favorites');
+    updateFavorites();
+    showAlert('⭐ Added to Favorites');
   } else {
-    showAlert('⚠️ Already in favorites');
+    showAlert('⚠️ Already in Favorites');
   }
 };
 
-const renderFavorites = () => {
+const updateFavorites = () => {
   favoritesDiv.innerHTML = `<button onclick="saveFavorite()">⭐ Save Favorite</button>`;
   getFavorites().forEach(expr => {
     const btn = document.createElement('button');
     btn.textContent = expr;
     btn.onclick = () => {
       screen.value = expr;
-      updateBracketButton();
+      highlightUnbalanced();
     };
     favoritesDiv.appendChild(btn);
   });
 };
 
-// === Voice Input ===
+// === Voice Recognition ===
 const startVoice = () => {
   try {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -512,29 +516,29 @@ const startVoice = () => {
       const spoken = e.results[0][0].transcript.toLowerCase();
       const parsed = parseSpokenMath(spoken);
       screen.value += parsed;
-      updateBracketButton();
+      highlightUnbalanced();
     };
 
     recognition.onerror = e => showAlert(`🎤 Error: ${e.error}`, 'error');
     recognition.start();
   } catch {
-    showAlert('🎤 Voice not supported in this browser', 'error');
+    showAlert('🎤 Voice input not supported', 'error');
   }
 };
 
-const parseSpokenMath = (text) => {
-  return text
+const parseSpokenMath = (input) => {
+  return input
     .replace(/plus/g, '+')
     .replace(/minus/g, '-')
-    .replace(/(multiply|times|into)/g, '*')
-    .replace(/(divide|over|divided by)/g, '/')
+    .replace(/(times|multiply|into)/g, '*')
+    .replace(/(divided by|divide|over)/g, '/')
     .replace(/equals?/g, '=')
     .replace(/[^\d+\-*/().]/g, '')
     .replace(/\s+/g, '');
 };
 
-// === Theme Management ===
-const changeTheme = (theme) => {
+// === Theme Handling ===
+const changeTheme = theme => {
   document.body.className = theme;
   themeSelect.value = theme;
   localStorage.setItem('theme', theme);
@@ -542,20 +546,19 @@ const changeTheme = (theme) => {
 
 const autoSwitchTheme = () => {
   const hour = new Date().getHours();
-  const fallback = (hour >= 6 && hour < 18) ? 'light' : 'dark';
-  const theme = localStorage.getItem('theme') || fallback;
-  changeTheme(theme);
+  const defaultTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
+  const savedTheme = localStorage.getItem('theme') || defaultTheme;
+  changeTheme(savedTheme);
 };
 
-// === Alerts (basic) ===
+// === Alert (Simple UX, replace with toast if needed) ===
 const showAlert = (msg, type = 'info') => {
-  // Replace this with a toast or modal for better UX later
-  alert(msg);
+  alert(msg); // Can replace with custom toast popup
 };
 
-// === Init ===
+// === Initialization ===
 window.onload = () => {
-  renderFavorites();
+  updateFavorites();
   autoSwitchTheme();
 };
 
