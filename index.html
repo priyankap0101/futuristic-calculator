@@ -381,6 +381,7 @@ const bracketBtn = document.getElementById('bracketBtn');
 const historyDiv = document.getElementById('history');
 const favoritesDiv = document.getElementById('favorites');
 
+// === State ===
 let historyArr = [];
 
 // === Expression Validators ===
@@ -395,7 +396,7 @@ const isBalanced = expr => {
   return balance === 0;
 };
 
-// === Calculator Logic ===
+// === Core Calculator Logic ===
 const append = char => {
   screen.value += char;
   highlightUnbalanced();
@@ -456,7 +457,7 @@ const updateHistory = () => {
   });
 };
 
-// === Clipboard Copy ===
+// === Clipboard Utility ===
 const copyResult = () => {
   const val = screen.value.trim();
   if (val) {
@@ -466,7 +467,7 @@ const copyResult = () => {
   }
 };
 
-// === Favorites Handling ===
+// === Favorites ===
 const getFavorites = () => {
   try {
     return JSON.parse(localStorage.getItem('favorites') || '[]');
@@ -503,11 +504,11 @@ const updateFavorites = () => {
   });
 };
 
-// === Voice Recognition ===
+// === Voice Input ===
 const startVoice = () => {
   try {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) throw Error();
+    if (!SpeechRecognition) throw new Error();
 
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
@@ -515,8 +516,12 @@ const startVoice = () => {
     recognition.onresult = e => {
       const spoken = e.results[0][0].transcript.toLowerCase();
       const parsed = parseSpokenMath(spoken);
-      screen.value += parsed;
-      highlightUnbalanced();
+      if (parsed) {
+        screen.value += parsed;
+        highlightUnbalanced();
+      } else {
+        showAlert('❌ Could not parse voice input', 'error');
+      }
     };
 
     recognition.onerror = e => showAlert(`🎤 Error: ${e.error}`, 'error');
@@ -551,9 +556,10 @@ const autoSwitchTheme = () => {
   changeTheme(savedTheme);
 };
 
-// === Alert (Simple UX, replace with toast if needed) ===
+// === Alerts (Customizable Toast Placeholder) ===
 const showAlert = (msg, type = 'info') => {
-  alert(msg); // Can replace with custom toast popup
+  // Replace with toast-style popup for better UX
+  alert(msg);
 };
 
 // === Initialization ===
@@ -561,6 +567,7 @@ window.onload = () => {
   updateFavorites();
   autoSwitchTheme();
 };
+
 
   </script>
 </body>
