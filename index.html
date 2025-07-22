@@ -1,97 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Futuristic Calculator</title>
   <style>
     :root {
-      --bg: #111;
-      --primary: #0ff;
-      --accent: #f0f;
-      --danger: #f55;
+      --bg: #0f0f0f;
+      --text: #f0f0f0;
+      --accent: #00ffe7;
+      --danger: #ff4d4d;
       --glass: rgba(255, 255, 255, 0.1);
-      --text: #fff;
     }
 
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+      background: var(--bg);
       color: var(--text);
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       min-height: 100vh;
-      padding: 2rem;
+      overflow-x: hidden;
     }
 
     .calculator {
+      backdrop-filter: blur(10px);
       background: var(--glass);
-      border-radius: 1.5rem;
-      padding: 2rem;
-      box-shadow: 0 0 30px var(--primary);
-      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      box-shadow: 0 0 30px var(--accent);
+      padding: 20px;
+      width: 90%;
       max-width: 400px;
-      width: 100%;
     }
 
-    .screen {
+    #screen {
       width: 100%;
-      font-size: 1.5rem;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      background: #000;
-      color: var(--primary);
-      border: none;
-      border-radius: 0.75rem;
+      height: 60px;
+      font-size: 1.5em;
       text-align: right;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
     }
 
     .buttons {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 0.5rem;
+      gap: 10px;
     }
 
-    .buttons button {
-      padding: 1rem;
+    .buttons button, #favorites button {
+      padding: 15px;
+      font-size: 1.2em;
       border: none;
-      border-radius: 1rem;
-      background: var(--primary);
+      border-radius: 12px;
+      background: var(--accent);
       color: #000;
-      font-size: 1.2rem;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: 0.3s;
     }
 
     .buttons button:hover {
-      background: var(--accent);
+      transform: scale(1.05);
     }
 
-    #themeSelect {
-      margin: 1rem 0;
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-    }
-
-    #favorites, #history {
-      margin-top: 1rem;
+    #history, #favorites {
+      margin-top: 15px;
+      max-height: 150px;
+      overflow-y: auto;
+      background: rgba(255,255,255,0.05);
+      padding: 10px;
+      border-radius: 10px;
     }
 
     #favorites button {
-      margin: 0.25rem;
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      background: var(--accent);
-      color: #000;
+      background: #333;
+      color: var(--accent);
+      margin: 3px;
+    }
+
+    #themeSelect {
+      margin: 10px auto;
+      display: block;
     }
   </style>
 </head>
 <body>
   <div class="calculator">
-    <input id="screen" class="screen" readonly>
+    <select id="themeSelect" onchange="changeTheme(this.value)">
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+    <input type="text" id="screen" readonly />
     <div class="buttons">
       <button onclick="append('7')">7</button>
       <button onclick="append('8')">8</button>
@@ -100,25 +107,25 @@
       <button onclick="append('4')">4</button>
       <button onclick="append('5')">5</button>
       <button onclick="append('6')">6</button>
-      <button onclick="append('+')">+</button>
+      <button onclick="append('*')">×</button>
       <button onclick="append('1')">1</button>
       <button onclick="append('2')">2</button>
       <button onclick="append('3')">3</button>
-      <button onclick="append('-')">-</button>
+      <button onclick="append('-')">−</button>
       <button onclick="append('0')">0</button>
-      <button id="bracketBtn" onclick="append('()')">()</button>
-      <button onclick="append('*')">×</button>
-      <button onclick="append('/')">÷</button>
+      <button id="bracketBtn" onclick="append('(')">(</button>
+      <button onclick="append(')')">)</button>
+      <button onclick="append('+')">+</button>
       <button onclick="clearScreen()">C</button>
+      <button onclick="append('/')">÷</button>
+      <button onclick="append('.')">.</button>
       <button onclick="calculate()">=</button>
-      <button onclick="copyResult()">📋</button>
-      <button onclick="startVoice()">🎤</button>
     </div>
-    <select id="themeSelect" onchange="changeTheme(this.value)">
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-      <option value="neon">Neon</option>
-    </select>
+    <div style="margin-top: 10px;">
+      <button onclick="startVoice()">🎤 Voice</button>
+      <button onclick="copyResult()">📋 Copy</button>
+      <button onclick="saveFavorite()">⭐ Favorite</button>
+    </div>
     <div id="favorites"></div>
     <div id="history"></div>
   </div>
@@ -159,15 +166,17 @@
 
     const calculate = () => {
       const expr = screen.value.trim();
-      if (!expr || !isBalanced(expr) || !isValidMath(expr)) return showToast('❌ Invalid Expression', 'error');
+      if (!expr || !isBalanced(expr) || !isValidMath(expr)) {
+        return showAlert('❌ Invalid Expression', 'error');
+      }
       try {
         const result = eval(expr);
-        if (!isFinite(result)) throw new Error();
+        if (!isFinite(result)) throw new Error('Non-finite result');
         screen.value = result;
         saveToHistory(expr, result);
       } catch {
         screen.value = 'Error';
-        showToast('⚠️ Evaluation Error', 'error');
+        showAlert('⚠️ Evaluation Error', 'error');
       }
       highlightUnbalanced();
     };
@@ -184,10 +193,11 @@
     };
 
     const updateHistory = () => {
-      historyDiv.innerHTML = '<h4>📜 History</h4>';
+      historyDiv.innerHTML = '';
       [...historyArr].reverse().forEach(entry => {
         const div = document.createElement('div');
         div.textContent = entry;
+        div.title = 'Click to reuse';
         div.onclick = () => {
           screen.value = entry.split('=')[0].trim();
           highlightUnbalanced();
@@ -198,10 +208,11 @@
 
     const copyResult = () => {
       const val = screen.value.trim();
-      if (!val) return;
-      navigator.clipboard.writeText(val)
-        .then(() => showToast('✅ Copied to clipboard', 'success'))
-        .catch(() => showToast('❌ Copy failed', 'error'));
+      if (val) {
+        navigator.clipboard.writeText(val)
+          .then(() => showAlert('✅ Copied to clipboard', 'success'))
+          .catch(() => showAlert('❌ Copy failed', 'error'));
+      }
     };
 
     const getFavorites = () => {
@@ -220,14 +231,14 @@
         favs.push(expr);
         localStorage.setItem('favorites', JSON.stringify(favs));
         updateFavorites();
-        showToast('⭐ Added to Favorites');
+        showAlert('⭐ Added to Favorites');
       } else {
-        showToast('⚠️ Already in Favorites');
+        showAlert('⚠️ Already in Favorites');
       }
     };
 
     const updateFavorites = () => {
-      favoritesDiv.innerHTML = '<h4>⭐ Favorites</h4>';
+      favoritesDiv.innerHTML = '';
       getFavorites().forEach(expr => {
         const btn = document.createElement('button');
         btn.textContent = expr;
@@ -252,24 +263,26 @@
             screen.value += parsed;
             highlightUnbalanced();
           } else {
-            showToast('❌ Could not parse voice input', 'error');
+            showAlert('❌ Could not parse voice input', 'error');
           }
         };
-        recognition.onerror = e => showToast(`🎤 Error: ${e.error}`, 'error');
+        recognition.onerror = e => showAlert(`🎤 Error: ${e.error}`, 'error');
         recognition.start();
       } catch {
-        showToast('🎤 Voice input not supported', 'error');
+        showAlert('🎤 Voice input not supported', 'error');
       }
     };
 
-    const parseSpokenMath = input => input
-      .replace(/plus/g, '+')
-      .replace(/minus/g, '-')
-      .replace(/(times|multiply|into)/g, '*')
-      .replace(/(divided by|divide|over)/g, '/')
-      .replace(/equals?/g, '=')
-      .replace(/[^\d+\-*/().]/g, '')
-      .replace(/\s+/g, '');
+    const parseSpokenMath = (input) => {
+      return input
+        .replace(/plus/g, '+')
+        .replace(/minus/g, '-')
+        .replace(/(times|multiply|into)/g, '*')
+        .replace(/(divided by|divide|over)/g, '/')
+        .replace(/equals?/g, '=')
+        .replace(/[^\d+\-*/().]/g, '')
+        .replace(/\s+/g, '');
+    };
 
     const changeTheme = theme => {
       document.body.className = theme;
@@ -284,8 +297,8 @@
       changeTheme(savedTheme);
     };
 
-    const showToast = (msg, type = 'info') => {
-      alert(msg); // Replace with custom toast UI
+    const showAlert = (msg, type = 'info') => {
+      alert(msg); // Replace later with toast popup
     };
 
     window.onload = () => {
