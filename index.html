@@ -319,6 +319,30 @@ input:focus {
     font-size: 14px;
   }
 }
+.toast {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  color: white;
+  padding: 0.7rem 1.2rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 1rem rgba(0,0,0,0.4);
+  z-index: 9999;
+  font-size: 1rem;
+  animation: fadeInOut 3s ease;
+}
+.toast-success { background: #28a745; }
+.toast-error { background: #dc3545; }
+.toast-info { background: #17a2b8; }
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+}
 
 
   </style>
@@ -384,7 +408,7 @@ const favoritesDiv = document.getElementById('favorites');
 // === State ===
 let historyArr = [];
 
-// === Expression Validators ===
+// === Validators ===
 const isValidMath = expr => /^[\d+\-*/().\s]+$/.test(expr);
 const isBalanced = expr => {
   let balance = 0;
@@ -396,7 +420,7 @@ const isBalanced = expr => {
   return balance === 0;
 };
 
-// === Core Calculator Logic ===
+// === Calculator Functions ===
 const append = char => {
   screen.value += char;
   highlightUnbalanced();
@@ -420,7 +444,7 @@ const calculate = () => {
 
   try {
     const result = eval(expr);
-    if (!isFinite(result)) throw new Error('Non-finite result');
+    if (!isFinite(result)) throw new Error('Invalid result');
     screen.value = result;
     saveToHistory(expr, result);
   } catch {
@@ -435,7 +459,7 @@ const highlightUnbalanced = () => {
   bracketBtn.style.backgroundColor = isBalanced(screen.value) ? '' : 'var(--danger)';
 };
 
-// === History Handling ===
+// === History ===
 const saveToHistory = (expr, result) => {
   const entry = `${expr} = ${result}`;
   if (historyArr.length >= 20) historyArr.shift();
@@ -455,16 +479,16 @@ const updateHistory = () => {
     };
     historyDiv.appendChild(div);
   });
+  historyDiv.scrollTop = historyDiv.scrollHeight;
 };
 
-// === Clipboard Utility ===
+// === Clipboard Copy ===
 const copyResult = () => {
   const val = screen.value.trim();
-  if (val) {
-    navigator.clipboard.writeText(val)
-      .then(() => showAlert('✅ Copied to clipboard', 'success'))
-      .catch(() => showAlert('❌ Copy failed', 'error'));
-  }
+  if (!val) return;
+  navigator.clipboard.writeText(val)
+    .then(() => showAlert('✅ Copied to clipboard', 'success'))
+    .catch(() => showAlert('❌ Copy failed', 'error'));
 };
 
 // === Favorites ===
@@ -502,6 +526,7 @@ const updateFavorites = () => {
     };
     favoritesDiv.appendChild(btn);
   });
+  favoritesDiv.scrollTop = favoritesDiv.scrollHeight;
 };
 
 // === Voice Input ===
@@ -531,7 +556,7 @@ const startVoice = () => {
   }
 };
 
-const parseSpokenMath = (input) => {
+const parseSpokenMath = input => {
   return input
     .replace(/plus/g, '+')
     .replace(/minus/g, '-')
@@ -542,7 +567,7 @@ const parseSpokenMath = (input) => {
     .replace(/\s+/g, '');
 };
 
-// === Theme Handling ===
+// === Theme ===
 const changeTheme = theme => {
   document.body.className = theme;
   themeSelect.value = theme;
@@ -556,13 +581,16 @@ const autoSwitchTheme = () => {
   changeTheme(savedTheme);
 };
 
-// === Alerts (Customizable Toast Placeholder) ===
+// === Toast Alert ===
 const showAlert = (msg, type = 'info') => {
-  // Replace with toast-style popup for better UX
-  alert(msg);
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
 };
 
-// === Initialization ===
+// === Init ===
 window.onload = () => {
   updateFavorites();
   autoSwitchTheme();
