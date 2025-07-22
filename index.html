@@ -1,381 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>3D Futuristic Calculator</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Futuristic Calculator</title>
   <style>
-/* ——————————————————————— Root Variables ——————————————————————— */
-:root {
-  --font: 'Segoe UI', 'Roboto', sans-serif;
-  --bg: #ffffff;
-  --text: #1a1a1a;
-  --accent: #007bff;
-  --btn-bg: #e0e0e0;
-  --btn-hover: #d0d0d0;
-  --danger: #dc3545;
-  --warn: #ffc107;
-  --glow: none;
-  --box-shadow-base: 0 6px 16px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
-  --box-shadow-inset: inset 0 -2px 2px rgba(255,255,255,0.04);
-}
+    :root {
+      --bg: #111;
+      --primary: #0ff;
+      --accent: #f0f;
+      --danger: #f55;
+      --glass: rgba(255, 255, 255, 0.1);
+      --text: #fff;
+    }
 
-/* ——————————————————————— Themes ——————————————————————— */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 2rem;
+    }
 
-body.light {
-  --bg: #ffffff;
-  --btn-bg: linear-gradient(145deg, #ffffff, #dce2e9);
-  --btn-hover: linear-gradient(145deg, #d2d8e0, #c6ccd4);
-  --text: #1a1a1a;
-  --accent: #007bff;
-  --glow: none;
-}
+    .calculator {
+      background: var(--glass);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      box-shadow: 0 0 30px var(--primary);
+      backdrop-filter: blur(15px);
+      max-width: 400px;
+      width: 100%;
+    }
 
-/* Neon, Matrix, Sunburst, Cyber, Aurora, Galaxy, Frost, Verdant, Tron, Mystic */
+    .screen {
+      width: 100%;
+      font-size: 1.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background: #000;
+      color: var(--primary);
+      border: none;
+      border-radius: 0.75rem;
+      text-align: right;
+    }
 
-body.neon {
-  --bg: #0a0020;
-  --btn-bg: linear-gradient(145deg, #4d0066, #220033);
-  --btn-hover: linear-gradient(145deg, #9900cc, #440066);
-  --text: #ffffff;
-  --accent: #ff00f7;
-  --danger: #ff204e;
-  --warn: #ffac00;
-  --glow: 0 0 18px rgba(255, 0, 247, 0.6);
-}
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+    }
 
-body.matrix {
-  --bg: #010a01;
-  --btn-bg: linear-gradient(145deg, #003300, #001a00);
-  --btn-hover: linear-gradient(145deg, #00cc00, #006600);
-  --text: #ccffcc;
-  --accent: #00ff33;
-  --danger: #ff0033;
-  --warn: #ffee00;
-  --glow: 0 0 16px rgba(0, 255, 0, 0.7);
-}
+    .buttons button {
+      padding: 1rem;
+      border: none;
+      border-radius: 1rem;
+      background: var(--primary);
+      color: #000;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
 
-body.sunburst {
-  --bg: #1b1400;
-  --btn-bg: linear-gradient(145deg, #4d3b00, #2a1f00);
-  --btn-hover: linear-gradient(145deg, #ffcc00, #cc9900);
-  --text: #fff5cc;
-  --accent: #ffdd33;
-  --danger: #ff4d00;
-  --warn: #ffe600;
-  --glow: 0 0 16px rgba(255, 204, 0, 0.6);
-}
+    .buttons button:hover {
+      background: var(--accent);
+    }
 
-body.cyber {
-  --bg: #0b0d1a;
-  --btn-bg: linear-gradient(145deg, #1a1d3a, #0d0f25);
-  --btn-hover: linear-gradient(145deg, #353a75, #1e214c);
-  --text: #0fffff;
-  --accent: #00ffe0;
-  --danger: #ff0066;
-  --warn: #ffff00;
-  --glow: 0 0 16px rgba(0, 255, 255, 0.5);
-}
+    #themeSelect {
+      margin: 1rem 0;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+    }
 
-body.aurora {
-  --bg: #1a1b2c;
-  --btn-bg: linear-gradient(145deg, #393c5e, #292a4a);
-  --btn-hover: linear-gradient(145deg, #6a6cb0, #3d3f6e);
-  --text: #fefefe;
-  --accent: #f45fff;
-  --danger: #ff4e88;
-  --warn: #f0ff87;
-  --glow: 0 0 16px rgba(244, 95, 255, 0.5);
-}
+    #favorites, #history {
+      margin-top: 1rem;
+    }
 
-body.galaxy {
-  --bg: #0a0824;
-  --btn-bg: linear-gradient(145deg, #1f1b4d, #0f0c2f);
-  --btn-hover: linear-gradient(145deg, #3a2d7d, #1d1560);
-  --text: #d6d6ff;
-  --accent: #9370db;
-  --danger: #ff6f91;
-  --warn: #ffd93b;
-  --glow: 0 0 14px rgba(147, 112, 219, 0.5);
-}
-
-body.frost {
-  --bg: #eaf4f8;
-  --btn-bg: linear-gradient(145deg, #d1e0e9, #c6d7de);
-  --btn-hover: linear-gradient(145deg, #b8d2e2, #a7c6d7);
-  --text: #1a1a1a;
-  --accent: #0077b6;
-  --danger: #e63946;
-  --warn: #ffba08;
-  --glow: 0 0 10px rgba(0, 119, 182, 0.3);
-}
-
-body.verdant {
-  --bg: #0f1c0f;
-  --btn-bg: linear-gradient(145deg, #2a4d2a, #1e351e);
-  --btn-hover: linear-gradient(145deg, #3f8f3f, #2e6a2e);
-  --text: #e6ffe6;
-  --accent: #76ff03;
-  --danger: #cc2936;
-  --warn: #ffcc00;
-  --glow: 0 0 14px rgba(118, 255, 3, 0.5);
-}
-
-body.tron {
-  --bg: #0c0f1a;
-  --btn-bg: linear-gradient(145deg, #1c1f33, #111425);
-  --btn-hover: linear-gradient(145deg, #20c997, #a100f2);
-  --text: #cafffb;
-  --accent: #00ffd5;
-  --danger: #ff2079;
-  --warn: #f7e733;
-  --glow: 0 0 18px rgba(0, 255, 213, 0.7);
-}
-
-body.mystic {
-  --bg: #13001a;
-  --btn-bg: linear-gradient(145deg, #310033, #1e0024);
-  --btn-hover: linear-gradient(145deg, #730075, #4d004d);
-  --text: #f7e6ff;
-  --accent: #c300ff;
-  --danger: #ff3366;
-  --warn: #ffcc66;
-  --glow: 0 0 16px rgba(195, 0, 255, 0.5);
-}
-
-/* ——————————————————————— Global Body ——————————————————————— */
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 1.5rem;
-  transition: background 0.4s ease, color 0.4s ease;
-}
-
-/* ——————————————————————— Calculator Container ——————————————————————— */
-
-.calculator {
-  position: relative;
-  max-width: 360px;
-  width: 100%;
-  padding: 1.5rem 1.2rem 2rem;
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(14px);
-  box-shadow:
-    0 12px 30px rgba(0, 0, 0, 0.45),
-    0 0 7px var(--accent),
-    inset 0 1px 6px rgba(255, 255, 255, 0.03);
-}
-
-/* ——————————————————————— Theme Dropdown ——————————————————————— */
-
-.theme-toggle {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-}
-
-select {
-  padding: 0.4rem 0.6rem;
-  border-radius: 8px;
-  background: var(--btn-bg);
-  color: var(--text);
-  border: none;
-  font-size: 0.85rem;
-  cursor: pointer;
-  box-shadow: 0 0 6px var(--accent);
-  transition: background 0.3s ease, color 0.3s ease;
-  appearance: none;
-}
-
-select:hover {
-  background: var(--btn-hover);
-  box-shadow: 0 0 10px var(--accent);
-}
-
-select option {
-  background-color: var(--bg);
-  color: var(--text);
-}
-
-/* ——————————————————————— Display ——————————————————————— */
-
-input.screen {
-  width: 90%;
-  background: rgba(255,255,255,0.08);
-  border: none;
-  color: var(--text);
-  font-size: 1.8rem;
-  padding: 12px;
-  text-align: right;
-  border-radius: 10px;
-  margin-top: 2.5rem;
-  margin-bottom: 1rem;
-  box-shadow:
-    inset 0 2px 6px rgba(0,0,0,0.5),
-    0 0 5px var(--accent);
-}
-
-/* ——————————————————————— Buttons Grid ——————————————————————— */
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-bottom: 1rem;
-}
-
-/* ——————————————————————— Buttons ——————————————————————— */
-
-button {
-  padding: 0.75rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 10px;
-  border: none;
-  color: var(--text);
-  background: var(--btn-bg);
-  box-shadow: var(--box-shadow-inset), var(--box-shadow-base);
-  cursor: pointer;
-  transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-button:hover {
-  background: var(--btn-hover);
-  transform: translateY(-2px);
-}
-
-button:active {
-  transform: scale(0.95);
-}
-
-button:focus,
-select:focus,
-input:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.equal {
-  background: var(--accent);
-  color: #000;
-  font-weight: 700;
-  box-shadow: var(--glow), 0 6px 12px rgba(0, 255, 225, 0.3);
-}
-
-.clear {
-  background: var(--danger);
-}
-
-.del {
-  background: var(--warn);
-}
-
-/* ——————————————————————— Controls & History ——————————————————————— */
-
-#controls {
-  text-align: right;
-  margin-bottom: 5px;
-}
-
-#controls button {
-  margin: 0 4px;
-  font-size: 0.85rem;
-  padding: 0.5rem;
-}
-
-#history div,
-#favorites button {
-  background: var(--btn-bg);
-  color: var(--text);
-  border: none;
-  margin: 2px 0;
-  padding: 0.4rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  text-align: left;
-  box-shadow:
-    inset 0 -1px 1px rgba(255,255,255,0.04),
-    0 2px 5px rgba(0,0,0,0.3);
-  transition: background 0.2s;
-}
-
-:is(#history div, #favorites button):hover {
-  background: var(--btn-hover);
-}
-
-/* ——————————————————————— Responsive ——————————————————————— */
-
-@media (max-width: 480px) {
-  html {
-    font-size: 14px;
-  }
-}
-.toast {
-  position: fixed;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #222;
-  color: white;
-  padding: 0.7rem 1.2rem;
-  border-radius: 1rem;
-  box-shadow: 0 0 1rem rgba(0,0,0,0.4);
-  z-index: 9999;
-  font-size: 1rem;
-  animation: fadeInOut 3s ease;
-}
-.toast-success { background: #28a745; }
-.toast-error { background: #dc3545; }
-.toast-info { background: #17a2b8; }
-
-@keyframes fadeInOut {
-  0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
-  10% { opacity: 1; transform: translateX(-50%) translateY(0); }
-  90% { opacity: 1; }
-  100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
-}
-
-
+    #favorites button {
+      margin: 0.25rem;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      background: var(--accent);
+      color: #000;
+    }
   </style>
 </head>
 <body>
   <div class="calculator">
-    <div class="theme-toggle">
-      <select id="themeSelect" onchange="changeTheme(this.value)">
-        <option value="dark">Dark</option>
-        <option value="light">Light</option>
-        <option value="neon">Neon</option>
-        <option value="matrix">Matrix</option>
-        <option value="sunburst">Sunburst</option>
-        <option value="cyber">Cyber</option>
-        <option value="aurora">Aurora</option>
-        <option value="galaxy">Galaxy</option>
-        <option value="frost">Frost</option>
-        <option value="verdant">Verdant</option>
-        <option value="tron">Tron</option>
-        <option value="mystic">Mystic</option>
-      </select>
-    </div>
-    <input class="screen" id="screen" readonly />
-    <div id="controls">
-      <button onclick="copyResult()">📋 Copy</button>
-      <button id="bracketBtn" onclick="append('(')">(</button>
-      <button onclick="startVoice()">🎤</button>
-    </div>
-    <div class="grid">
+    <input id="screen" class="screen" readonly>
+    <div class="buttons">
       <button onclick="append('7')">7</button>
       <button onclick="append('8')">8</button>
       <button onclick="append('9')">9</button>
-      <button class="del" onclick="del()">DEL</button>
+      <button onclick="del()">⌫</button>
       <button onclick="append('4')">4</button>
       <button onclick="append('5')">5</button>
       <button onclick="append('6')">6</button>
@@ -385,218 +106,192 @@ input:focus {
       <button onclick="append('3')">3</button>
       <button onclick="append('-')">-</button>
       <button onclick="append('0')">0</button>
-      <button onclick="append('.')">.</button>
-      <button onclick="append('*')">*</button>
-      <button onclick="append('/')">/</button>
-      <button class="clear" onclick="clearScreen()">C</button>
-      <button class="equal" style="grid-column: span 3" onclick="calculate()">=</button>
+      <button id="bracketBtn" onclick="append('()')">()</button>
+      <button onclick="append('*')">×</button>
+      <button onclick="append('/')">÷</button>
+      <button onclick="clearScreen()">C</button>
+      <button onclick="calculate()">=</button>
+      <button onclick="copyResult()">📋</button>
+      <button onclick="startVoice()">🎤</button>
     </div>
-    <div id="favorites">
-      <button onclick="saveFavorite()">⭐ Save Favorite</button>
-    </div>
+    <select id="themeSelect" onchange="changeTheme(this.value)">
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="neon">Neon</option>
+    </select>
+    <div id="favorites"></div>
     <div id="history"></div>
   </div>
 
   <script>
-// === DOM Elements ===
-const screen = document.getElementById('screen');
-const themeSelect = document.getElementById('themeSelect');
-const bracketBtn = document.getElementById('bracketBtn');
-const historyDiv = document.getElementById('history');
-const favoritesDiv = document.getElementById('favorites');
+    const screen = document.getElementById('screen');
+    const themeSelect = document.getElementById('themeSelect');
+    const bracketBtn = document.getElementById('bracketBtn');
+    const historyDiv = document.getElementById('history');
+    const favoritesDiv = document.getElementById('favorites');
+    let historyArr = [];
 
-// === State ===
-let historyArr = [];
+    const isValidMath = expr => /^[\d+\-*/().\s]+$/.test(expr);
+    const isBalanced = expr => {
+      let balance = 0;
+      for (let char of expr) {
+        if (char === '(') balance++;
+        else if (char === ')') balance--;
+        if (balance < 0) return false;
+      }
+      return balance === 0;
+    };
 
-// === Validators ===
-const isValidMath = expr => /^[\d+\-*/().\s]+$/.test(expr);
-const isBalanced = expr => {
-  let balance = 0;
-  for (let char of expr) {
-    if (char === '(') balance++;
-    else if (char === ')') balance--;
-    if (balance < 0) return false;
-  }
-  return balance === 0;
-};
-
-// === Calculator Functions ===
-const append = char => {
-  screen.value += char;
-  highlightUnbalanced();
-};
-
-const del = () => {
-  screen.value = screen.value.slice(0, -1);
-  highlightUnbalanced();
-};
-
-const clearScreen = () => {
-  screen.value = '';
-  highlightUnbalanced();
-};
-
-const calculate = () => {
-  const expr = screen.value.trim();
-  if (!expr || !isBalanced(expr) || !isValidMath(expr)) {
-    return showAlert('❌ Invalid Expression', 'error');
-  }
-
-  try {
-    const result = eval(expr);
-    if (!isFinite(result)) throw new Error('Invalid result');
-    screen.value = result;
-    saveToHistory(expr, result);
-  } catch {
-    screen.value = 'Error';
-    showAlert('⚠️ Evaluation Error', 'error');
-  }
-
-  highlightUnbalanced();
-};
-
-const highlightUnbalanced = () => {
-  bracketBtn.style.backgroundColor = isBalanced(screen.value) ? '' : 'var(--danger)';
-};
-
-// === History ===
-const saveToHistory = (expr, result) => {
-  const entry = `${expr} = ${result}`;
-  if (historyArr.length >= 20) historyArr.shift();
-  historyArr.push(entry);
-  updateHistory();
-};
-
-const updateHistory = () => {
-  historyDiv.innerHTML = '';
-  [...historyArr].reverse().forEach(entry => {
-    const div = document.createElement('div');
-    div.textContent = entry;
-    div.title = 'Click to reuse';
-    div.onclick = () => {
-      screen.value = entry.split('=')[0].trim();
+    const append = char => {
+      screen.value += char;
       highlightUnbalanced();
     };
-    historyDiv.appendChild(div);
-  });
-  historyDiv.scrollTop = historyDiv.scrollHeight;
-};
 
-// === Clipboard Copy ===
-const copyResult = () => {
-  const val = screen.value.trim();
-  if (!val) return;
-  navigator.clipboard.writeText(val)
-    .then(() => showAlert('✅ Copied to clipboard', 'success'))
-    .catch(() => showAlert('❌ Copy failed', 'error'));
-};
-
-// === Favorites ===
-const getFavorites = () => {
-  try {
-    return JSON.parse(localStorage.getItem('favorites') || '[]');
-  } catch {
-    return [];
-  }
-};
-
-const saveFavorite = () => {
-  const expr = screen.value.trim();
-  if (!expr) return;
-
-  let favs = getFavorites();
-  if (!favs.includes(expr)) {
-    favs.push(expr);
-    localStorage.setItem('favorites', JSON.stringify(favs));
-    updateFavorites();
-    showAlert('⭐ Added to Favorites');
-  } else {
-    showAlert('⚠️ Already in Favorites');
-  }
-};
-
-const updateFavorites = () => {
-  favoritesDiv.innerHTML = `<button onclick="saveFavorite()">⭐ Save Favorite</button>`;
-  getFavorites().forEach(expr => {
-    const btn = document.createElement('button');
-    btn.textContent = expr;
-    btn.onclick = () => {
-      screen.value = expr;
+    const del = () => {
+      screen.value = screen.value.slice(0, -1);
       highlightUnbalanced();
     };
-    favoritesDiv.appendChild(btn);
-  });
-  favoritesDiv.scrollTop = favoritesDiv.scrollHeight;
-};
 
-// === Voice Input ===
-const startVoice = () => {
-  try {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) throw new Error();
+    const clearScreen = () => {
+      screen.value = '';
+      highlightUnbalanced();
+    };
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
+    const calculate = () => {
+      const expr = screen.value.trim();
+      if (!expr || !isBalanced(expr) || !isValidMath(expr)) return showToast('❌ Invalid Expression', 'error');
+      try {
+        const result = eval(expr);
+        if (!isFinite(result)) throw new Error();
+        screen.value = result;
+        saveToHistory(expr, result);
+      } catch {
+        screen.value = 'Error';
+        showToast('⚠️ Evaluation Error', 'error');
+      }
+      highlightUnbalanced();
+    };
 
-    recognition.onresult = e => {
-      const spoken = e.results[0][0].transcript.toLowerCase();
-      const parsed = parseSpokenMath(spoken);
-      if (parsed) {
-        screen.value += parsed;
-        highlightUnbalanced();
-      } else {
-        showAlert('❌ Could not parse voice input', 'error');
+    const highlightUnbalanced = () => {
+      bracketBtn.style.backgroundColor = isBalanced(screen.value) ? '' : 'var(--danger)';
+    };
+
+    const saveToHistory = (expr, result) => {
+      const entry = `${expr} = ${result}`;
+      if (historyArr.length >= 20) historyArr.shift();
+      historyArr.push(entry);
+      updateHistory();
+    };
+
+    const updateHistory = () => {
+      historyDiv.innerHTML = '<h4>📜 History</h4>';
+      [...historyArr].reverse().forEach(entry => {
+        const div = document.createElement('div');
+        div.textContent = entry;
+        div.onclick = () => {
+          screen.value = entry.split('=')[0].trim();
+          highlightUnbalanced();
+        };
+        historyDiv.appendChild(div);
+      });
+    };
+
+    const copyResult = () => {
+      const val = screen.value.trim();
+      if (!val) return;
+      navigator.clipboard.writeText(val)
+        .then(() => showToast('✅ Copied to clipboard', 'success'))
+        .catch(() => showToast('❌ Copy failed', 'error'));
+    };
+
+    const getFavorites = () => {
+      try {
+        return JSON.parse(localStorage.getItem('favorites') || '[]');
+      } catch {
+        return [];
       }
     };
 
-    recognition.onerror = e => showAlert(`🎤 Error: ${e.error}`, 'error');
-    recognition.start();
-  } catch {
-    showAlert('🎤 Voice input not supported', 'error');
-  }
-};
+    const saveFavorite = () => {
+      const expr = screen.value.trim();
+      if (!expr) return;
+      let favs = getFavorites();
+      if (!favs.includes(expr)) {
+        favs.push(expr);
+        localStorage.setItem('favorites', JSON.stringify(favs));
+        updateFavorites();
+        showToast('⭐ Added to Favorites');
+      } else {
+        showToast('⚠️ Already in Favorites');
+      }
+    };
 
-const parseSpokenMath = input => {
-  return input
-    .replace(/plus/g, '+')
-    .replace(/minus/g, '-')
-    .replace(/(times|multiply|into)/g, '*')
-    .replace(/(divided by|divide|over)/g, '/')
-    .replace(/equals?/g, '=')
-    .replace(/[^\d+\-*/().]/g, '')
-    .replace(/\s+/g, '');
-};
+    const updateFavorites = () => {
+      favoritesDiv.innerHTML = '<h4>⭐ Favorites</h4>';
+      getFavorites().forEach(expr => {
+        const btn = document.createElement('button');
+        btn.textContent = expr;
+        btn.onclick = () => {
+          screen.value = expr;
+          highlightUnbalanced();
+        };
+        favoritesDiv.appendChild(btn);
+      });
+    };
 
-// === Theme ===
-const changeTheme = theme => {
-  document.body.className = theme;
-  themeSelect.value = theme;
-  localStorage.setItem('theme', theme);
-};
+    const startVoice = () => {
+      try {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) throw new Error();
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.onresult = e => {
+          const spoken = e.results[0][0].transcript.toLowerCase();
+          const parsed = parseSpokenMath(spoken);
+          if (parsed) {
+            screen.value += parsed;
+            highlightUnbalanced();
+          } else {
+            showToast('❌ Could not parse voice input', 'error');
+          }
+        };
+        recognition.onerror = e => showToast(`🎤 Error: ${e.error}`, 'error');
+        recognition.start();
+      } catch {
+        showToast('🎤 Voice input not supported', 'error');
+      }
+    };
 
-const autoSwitchTheme = () => {
-  const hour = new Date().getHours();
-  const defaultTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
-  const savedTheme = localStorage.getItem('theme') || defaultTheme;
-  changeTheme(savedTheme);
-};
+    const parseSpokenMath = input => input
+      .replace(/plus/g, '+')
+      .replace(/minus/g, '-')
+      .replace(/(times|multiply|into)/g, '*')
+      .replace(/(divided by|divide|over)/g, '/')
+      .replace(/equals?/g, '=')
+      .replace(/[^\d+\-*/().]/g, '')
+      .replace(/\s+/g, '');
 
-// === Toast Alert ===
-const showAlert = (msg, type = 'info') => {
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  toast.textContent = msg;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-};
+    const changeTheme = theme => {
+      document.body.className = theme;
+      themeSelect.value = theme;
+      localStorage.setItem('theme', theme);
+    };
 
-// === Init ===
-window.onload = () => {
-  updateFavorites();
-  autoSwitchTheme();
-};
+    const autoSwitchTheme = () => {
+      const hour = new Date().getHours();
+      const defaultTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
+      const savedTheme = localStorage.getItem('theme') || defaultTheme;
+      changeTheme(savedTheme);
+    };
 
+    const showToast = (msg, type = 'info') => {
+      alert(msg); // Replace with custom toast UI
+    };
 
+    window.onload = () => {
+      updateFavorites();
+      autoSwitchTheme();
+    };
   </script>
 </body>
 </html>
