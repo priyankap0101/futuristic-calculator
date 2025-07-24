@@ -6,56 +6,57 @@
   <title>Futuristic Calculator</title>
   <style>
   :root {
-  --bg: #0f0f0f;
+  --bg: #0a0a0a;
   --text: #f0f0f0;
   --accent: #00ffe7;
   --danger: #ff4d4d;
-  --glass: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(0, 255, 231, 0.4);
-  --hover-scale: 1.06;
-  --button-shadow: 0 4px 12px rgba(0, 255, 231, 0.25);
+  --glass: rgba(255, 255, 255, 0.07);
+  --highlight: rgba(0, 255, 231, 0.4);
+  --shadow: rgba(0, 255, 231, 0.2);
+  --transition-fast: 0.2s ease;
+  --transition-smooth: 0.35s ease;
 }
 
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: var(--bg);
+  background-color: var(--bg);
   color: var(--text);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 2vh 1rem;
+  padding: 2rem 1rem;
   overflow-x: hidden;
 }
 
 .calculator {
-  background: var(--glass);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  border: 1px solid var(--border-glow);
-  border-radius: 24px;
-  box-shadow: 0 0 30px var(--accent), inset 0 0 10px rgba(255, 255, 255, 0.03);
+  width: 100%;
+  max-width: 420px;
   padding: 24px;
-  width: 90%;
-  max-width: 440px;
-  transition: all 0.3s ease-in-out;
+  border-radius: 20px;
+  background: var(--glass);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--highlight);
+  box-shadow: 0 0 30px var(--accent), inset 0 0 5px rgba(255,255,255,0.05);
+  transition: var(--transition-smooth);
 }
 
 #screen {
   width: 100%;
   height: 64px;
-  font-size: 1.7em;
-  text-align: right;
   padding: 12px 16px;
+  font-size: 1.6em;
+  text-align: right;
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
   border: none;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text);
-  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 6px rgba(255,255,255,0.1);
   margin-bottom: 16px;
-  transition: background 0.3s ease;
+  transition: var(--transition-smooth);
 }
 
 .buttons {
@@ -66,55 +67,52 @@ body {
 
 .buttons button,
 #favorites button {
-  padding: 15px;
+  padding: 14px;
   font-size: 1.15em;
-  font-weight: 500;
-  border: none;
-  border-radius: 14px;
+  font-weight: 600;
   background: var(--accent);
   color: #000;
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px var(--shadow);
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: var(--button-shadow);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
   position: relative;
   overflow: hidden;
 }
 
 .buttons button:hover,
 #favorites button:hover {
-  transform: scale(var(--hover-scale));
-  box-shadow: 0 6px 18px rgba(0, 255, 231, 0.4);
+  transform: scale(1.07);
+  box-shadow: 0 6px 18px var(--highlight);
 }
 
 .buttons button:active::after {
   content: '';
   position: absolute;
-  width: 120%;
-  height: 120%;
-  top: -10%;
-  left: -10%;
-  background: rgba(255, 255, 255, 0.3);
+  top: 50%;
+  left: 50%;
+  width: 140%;
+  height: 140%;
+  background: rgba(255, 255, 255, 0.15);
+  transform: translate(-50%, -50%) scale(0.7);
   border-radius: 50%;
-  animation: ripple 0.4s ease-out;
+  animation: ripple 0.5s ease-out;
   z-index: 0;
 }
 
 @keyframes ripple {
-  from {
-    transform: scale(0.6);
-    opacity: 0.7;
-  }
   to {
-    transform: scale(1.8);
+    transform: translate(-50%, -50%) scale(1.8);
     opacity: 0;
   }
 }
 
 #favorites button {
-  background: #1a1a1a;
+  background: #222;
   color: var(--accent);
   font-size: 0.95em;
-  margin: 4px 3px;
+  margin: 3px;
 }
 
 #history,
@@ -126,8 +124,8 @@ body {
   padding: 12px;
   border-radius: 14px;
   width: 100%;
-  box-shadow: inset 0 0 8px rgba(0, 255, 231, 0.12);
-  backdrop-filter: blur(6px);
+  box-shadow: inset 0 0 6px rgba(0, 255, 231, 0.1);
+  backdrop-filter: blur(5px);
 }
 
 #history div {
@@ -136,26 +134,25 @@ body {
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.03);
   cursor: pointer;
-  transition: background 0.25s ease;
+  transition: background var(--transition-fast);
 }
 
 #history div:hover {
-  background: rgba(0, 255, 231, 0.18);
+  background: rgba(0, 255, 231, 0.15);
   color: #000;
 }
 
 #themeSelect {
-  margin: 20px auto 0;
-  display: block;
+  margin-top: 24px;
   padding: 10px 14px;
   font-size: 1em;
   border-radius: 10px;
-  background: var(--glass);
+  background: rgba(0, 0, 0, 0.2);
   border: 1px solid var(--accent);
   color: var(--text);
-  box-shadow: 0 0 6px var(--accent);
+  box-shadow: 0 0 8px var(--accent);
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: var(--transition-smooth);
 }
 
   </style>
