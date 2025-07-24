@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Futuristic Calculator</title>
   <style>
-  :root {
+ :root {
   --bg: #0d0d0f;
   --text: #f0f0f0;
   --accent: #00ffe7;
@@ -37,7 +37,6 @@ body {
 .calculator {
   background: var(--glass);
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-light);
   border-radius: var(--radius);
   box-shadow: var(--glow), var(--shadow-xl);
@@ -77,16 +76,16 @@ body {
   border-radius: 14px;
   background: linear-gradient(145deg, var(--accent), var(--accent-dark));
   color: #000;
-  box-shadow: 0 5px 18px rgba(0, 255, 231, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 255, 231, 0.25);
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
   overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .buttons button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 24px rgba(0, 255, 231, 0.3);
+  transform: scale(1.08);
+  box-shadow: 0 6px 22px rgba(0, 255, 231, 0.4);
 }
 
 .buttons button:active::after {
@@ -118,10 +117,11 @@ body {
 }
 
 #favorites button {
-  background: #1b1b1b;
+  background: #1a1a1a;
   color: var(--accent);
   font-size: 0.9em;
   padding: 10px 14px;
+  box-shadow: 0 2px 10px rgba(0, 255, 231, 0.1);
 }
 
 #history,
@@ -161,6 +161,7 @@ body {
   cursor: pointer;
   transition: var(--transition);
 }
+
 
   </style>
 </head>
