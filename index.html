@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Futuristic Calculator</title>
   <style>
- :root {
+:root {
   --bg: #0d0d0f;
   --text: #f0f0f0;
   --accent: #00ffe7;
@@ -13,11 +13,11 @@
   --danger: #ff4d4d;
   --glass: rgba(255, 255, 255, 0.05);
   --glass-light: rgba(255, 255, 255, 0.09);
-  --glow: 0 0 12px var(--accent);
-  --inset: inset 0 0 8px rgba(0, 255, 231, 0.15);
-  --radius: 16px;
-  --transition: 0.3s ease;
-  --shadow-xl: 0 0 30px rgba(0, 255, 231, 0.35);
+  --glow: 0 0 16px var(--accent);
+  --inset: inset 0 0 10px rgba(0, 255, 231, 0.15);
+  --radius: 18px;
+  --transition: 0.3s ease-in-out;
+  --shadow-xl: 0 0 30px rgba(0, 255, 231, 0.4);
 }
 
 body {
@@ -36,11 +36,11 @@ body {
 
 .calculator {
   background: var(--glass);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(25px);
   border: 1px solid var(--glass-light);
   border-radius: var(--radius);
   box-shadow: var(--glow), var(--shadow-xl);
-  padding: 24px;
+  padding: 28px;
   width: 100%;
   max-width: 420px;
   transition: var(--transition);
@@ -48,16 +48,16 @@ body {
 
 #screen {
   width: 100%;
-  height: 64px;
-  font-size: 1.6em;
+  height: 68px;
+  font-size: 1.7em;
   text-align: right;
-  padding: 14px;
+  padding: 16px;
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.07);
   color: var(--text);
   border: none;
-  box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.1);
-  margin-bottom: 18px;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
   transition: var(--transition);
 }
 
@@ -70,22 +70,22 @@ body {
 .buttons button,
 #favorites button {
   padding: 16px;
-  font-size: 1.1em;
+  font-size: 1.15em;
   font-weight: 600;
   border: none;
-  border-radius: 14px;
+  border-radius: 16px;
   background: linear-gradient(145deg, var(--accent), var(--accent-dark));
   color: #000;
-  box-shadow: 0 4px 16px rgba(0, 255, 231, 0.25);
+  box-shadow: 0 4px 18px rgba(0, 255, 231, 0.25);
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .buttons button:hover {
-  transform: scale(1.08);
-  box-shadow: 0 6px 22px rgba(0, 255, 231, 0.4);
+  transform: scale(1.1);
+  box-shadow: 0 6px 26px rgba(0, 255, 231, 0.4);
 }
 
 .buttons button:active::after {
@@ -93,18 +93,18 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 160%;
-  height: 160%;
-  background: rgba(255, 255, 255, 0.15);
-  transform: translate(-50%, -50%) scale(0.7);
+  width: 180%;
+  height: 180%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%) scale(0.6);
   border-radius: 50%;
-  animation: ripple 0.5s ease-out;
+  animation: ripple 0.45s ease-out;
   z-index: 0;
 }
 
 @keyframes ripple {
   to {
-    transform: translate(-50%, -50%) scale(1.7);
+    transform: translate(-50%, -50%) scale(1.8);
     opacity: 0;
   }
 }
@@ -112,52 +112,52 @@ body {
 #favorites {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 18px;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 #favorites button {
   background: #1a1a1a;
   color: var(--accent);
-  font-size: 0.9em;
-  padding: 10px 14px;
-  box-shadow: 0 2px 10px rgba(0, 255, 231, 0.1);
+  font-size: 0.95em;
+  padding: 10px 16px;
+  box-shadow: 0 2px 12px rgba(0, 255, 231, 0.1);
 }
 
 #history,
 #favorites {
-  margin-top: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 14px;
+  margin-top: 22px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 16px;
   border-radius: var(--radius);
-  max-height: 180px;
+  max-height: 200px;
   overflow-y: auto;
   box-shadow: var(--inset);
 }
 
 #history div {
-  padding: 8px 12px;
+  padding: 10px 14px;
   background: rgba(255, 255, 255, 0.03);
-  margin-bottom: 6px;
-  border-radius: 8px;
+  margin-bottom: 8px;
+  border-radius: 10px;
   cursor: pointer;
   transition: background var(--transition);
 }
 
 #history div:hover {
-  background: rgba(0, 255, 231, 0.15);
+  background: rgba(0, 255, 231, 0.18);
   color: #000;
 }
 
 #themeSelect {
-  margin-top: 24px;
-  padding: 10px 16px;
+  margin-top: 26px;
+  padding: 12px 18px;
   font-size: 1em;
-  border-radius: 12px;
-  background: #111;
+  border-radius: 14px;
+  background: #121212;
   border: 1px solid var(--accent);
   color: var(--accent);
-  box-shadow: 0 0 10px var(--accent);
+  box-shadow: 0 0 12px var(--accent);
   cursor: pointer;
   transition: var(--transition);
 }
