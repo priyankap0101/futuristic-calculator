@@ -4,27 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Futuristic Calculator</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathjs@12.4.1/lib/browser/math.min.js">
   <style>
     :root {
-      --bg: #0d0d0f;
+      --bg: #0f0f0f;
       --text: #f0f0f0;
       --accent: #00ffe7;
-      --accent-dark: #00cabb;
       --danger: #ff4d4d;
-
-      --glass: rgba(255, 255, 255, 0.05);
-      --glass-light: rgba(255, 255, 255, 0.08);
-      --inset: inset 0 0 10px rgba(0, 255, 231, 0.08);
-      --glow: 0 0 20px var(--accent);
-      --shadow-xl: 0 0 32px rgba(0, 255, 231, 0.35);
-
-      --radius: 16px;
-      --transition: 0.3s ease;
+      --glass: rgba(255, 255, 255, 0.1);
     }
-
+    body.light {
+      --bg: #f9f9f9;
+      --text: #000;
+      --accent: #0077ff;
+      --glass: rgba(0, 0, 0, 0.05);
+    }
     body {
       margin: 0;
-      padding: 2rem;
       font-family: 'Segoe UI', sans-serif;
       background: var(--bg);
       color: var(--text);
@@ -34,173 +30,93 @@
       justify-content: center;
       min-height: 100vh;
       overflow-x: hidden;
-      transition: background var(--transition), color var(--transition);
+      transition: background 0.3s, color 0.3s;
     }
-
     .calculator {
-      width: 100%;
-      max-width: 420px;
-      padding: 24px;
+      backdrop-filter: blur(10px);
       background: var(--glass);
-      border: 1px solid var(--glass-light);
-      border-radius: var(--radius);
-      box-shadow: var(--glow), var(--shadow-xl);
-      backdrop-filter: blur(20px);
-      transition: var(--transition);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      box-shadow: 0 0 30px var(--accent);
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
     }
-
     #screen {
       width: 100%;
-      height: 64px;
-      font-size: 1.6em;
+      height: 60px;
+      font-size: 1.5em;
       text-align: right;
-      padding: 14px;
-      margin-bottom: 18px;
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text);
+      margin-bottom: 10px;
+      padding: 10px;
       border: none;
-      border-radius: var(--radius);
-      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
-      transition: var(--transition);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
     }
-
     .buttons {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
+      gap: 10px;
     }
-
-    .buttons button,
-    #favorites button {
-      position: relative;
-      overflow: hidden;
-      padding: 16px;
-      font-size: 1.1em;
-      font-weight: 600;
-      color: #000;
+    .buttons button, #favorites button {
+      padding: 15px;
+      font-size: 1.2em;
       border: none;
-      border-radius: 14px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-      box-shadow: 0 4px 16px rgba(0, 255, 231, 0.3);
-      cursor: pointer;
-      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.3s;
-    }
-
-    .buttons button:hover {
-      transform: scale(1.1);
-      box-shadow: 0 8px 28px rgba(0, 255, 231, 0.5);
-      background: linear-gradient(135deg, var(--accent-dark), var(--accent));
-    }
-
-    .buttons button:active::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 180%;
-      height: 180%;
-      background: rgba(255, 255, 255, 0.2);
-      transform: translate(-50%, -50%) scale(0.6);
-      border-radius: 50%;
-      animation: ripple 0.45s ease-out;
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    @keyframes ripple {
-      to {
-        transform: translate(-50%, -50%) scale(1.8);
-        opacity: 0;
-      }
-    }
-
-    #favorites {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 18px;
-    }
-
-    #favorites button {
-      font-size: 0.9em;
-      padding: 10px 14px;
-      background: #181818;
-      color: var(--accent);
-      box-shadow: 0 2px 10px rgba(0, 255, 231, 0.15);
-      border-radius: 10px;
-      transition: var(--transition);
-    }
-
-    #history,
-    #favorites {
-      margin-top: 20px;
-      background: rgba(255, 255, 255, 0.04);
-      padding: 14px;
-      border-radius: var(--radius);
-      max-height: 180px;
-      overflow-y: auto;
-      box-shadow: var(--inset);
-      transition: var(--transition);
-      scrollbar-width: thin;
-      scrollbar-color: var(--accent-dark) transparent;
-    }
-
-    #history::-webkit-scrollbar,
-    #favorites::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    #history::-webkit-scrollbar-thumb,
-    #favorites::-webkit-scrollbar-thumb {
-      background-color: var(--accent-dark);
-      border-radius: 10px;
-    }
-
-    #history div {
-      padding: 8px 12px;
-      background: rgba(255, 255, 255, 0.03);
-      margin-bottom: 6px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background var(--transition);
-    }
-
-    #history div:hover {
-      background: rgba(0, 255, 231, 0.25);
-      color: #000;
-    }
-
-    #themeSelect {
-      margin-top: 24px;
-      padding: 10px 16px;
-      font-size: 1em;
       border-radius: 12px;
-      background: #111;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      box-shadow: 0 0 12px var(--accent);
+      background: var(--accent);
+      color: #000;
       cursor: pointer;
-      transition: var(--transition);
+      transition: 0.3s;
     }
-
-    #themeSelect:hover {
-      background: #151515;
-      box-shadow: 0 0 18px var(--accent);
+    .buttons button:hover {
+      transform: scale(1.05);
+    }
+    #history, #favorites {
+      margin-top: 15px;
+      max-height: 150px;
+      overflow-y: auto;
+      background: rgba(255,255,255,0.05);
+      padding: 10px;
+      border-radius: 10px;
+    }
+    #favorites button {
+      background: #333;
+      color: var(--accent);
+      margin: 2px;
+    }
+    #themeSelect {
+      margin: 10px auto;
+      display: block;
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px var(--accent);
+      z-index: 9999;
+      animation: fade 3s forwards;
+    }
+    @keyframes fade {
+      0% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { opacity: 0; }
     }
   </style>
 </head>
 <body>
   <div class="calculator">
-    <select id="themeSelect" onchange="changeTheme(this.value)">
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-    </select>
     <input type="text" id="screen" readonly />
     <div class="buttons">
       <button onclick="append('7')">7</button>
       <button onclick="append('8')">8</button>
       <button onclick="append('9')">9</button>
-      <button onclick="del()">⌫</button>
+      <button onclick="append('/')">÷</button>
       <button onclick="append('4')">4</button>
       <button onclick="append('5')">5</button>
       <button onclick="append('6')">6</button>
@@ -210,197 +126,70 @@
       <button onclick="append('3')">3</button>
       <button onclick="append('-')">−</button>
       <button onclick="append('0')">0</button>
-      <button id="bracketBtn" onclick="append('(')">(</button>
-      <button onclick="append(')')">)</button>
-      <button onclick="append('+')">+</button>
-      <button onclick="clearScreen()">C</button>
-      <button onclick="append('/')">÷</button>
       <button onclick="append('.')">.</button>
       <button onclick="calculate()">=</button>
+      <button onclick="append('+')">+</button>
+      <button onclick="append('(')">(</button>
+      <button onclick="append(')')">)</button>
+      <button onclick="clearScreen()">C</button>
+      <button onclick="del()">⌫</button>
     </div>
-    <div style="margin-top: 10px;">
-      <button onclick="startVoice()">🎤 Voice</button>
-      <button onclick="copyResult()">📋 Copy</button>
-      <button onclick="saveFavorite()">⭐ Favorite</button>
-    </div>
+    <select id="themeSelect" onchange="changeTheme(this.value)">
+      <option value="dark">Dark</option>
+      <option value="light">Light</option>
+    </select>
     <div id="favorites"></div>
     <div id="history"></div>
   </div>
-
+  <script src="https://cdn.jsdelivr.net/npm/mathjs/lib/browser/math.min.js"></script>
   <script>
     const screen = document.getElementById('screen');
     const themeSelect = document.getElementById('themeSelect');
-    const bracketBtn = document.getElementById('bracketBtn');
-    const historyDiv = document.getElementById('history');
-    const favoritesDiv = document.getElementById('favorites');
-    let historyArr = [];
+    let history = JSON.parse(localStorage.getItem('history')) || [];
 
-    const isValidMath = expr => /^[\d+\-*/().\s]+$/.test(expr);
-    const isBalanced = expr => {
-      let balance = 0;
-      for (let char of expr) {
-        if (char === '(') balance++;
-        else if (char === ')') balance--;
-        if (balance < 0) return false;
-      }
-      return balance === 0;
+    const toast = msg => {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.innerText = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
     };
 
-    const append = char => {
-      screen.value += char;
-      highlightUnbalanced();
-    };
-
-    const del = () => {
-      screen.value = screen.value.slice(0, -1);
-      highlightUnbalanced();
-    };
-
-    const clearScreen = () => {
-      screen.value = '';
-      highlightUnbalanced();
+    const append = val => {
+      if (/[^\d)]+$/.test(screen.value) && /[^\d(]+/.test(val)) return;
+      screen.value += val;
     };
 
     const calculate = () => {
-      const expr = screen.value.trim();
-      if (!expr || !isBalanced(expr) || !isValidMath(expr)) {
-        return showAlert('❌ Invalid Expression', 'error');
-      }
       try {
-        const result = eval(expr);
-        if (!isFinite(result)) throw new Error('Non-finite result');
+        const result = math.evaluate(screen.value);
+        history.push(`${screen.value} = ${result}`);
+        localStorage.setItem('history', JSON.stringify(history));
         screen.value = result;
-        saveToHistory(expr, result);
-      } catch {
-        screen.value = 'Error';
-        showAlert('⚠️ Evaluation Error', 'error');
-      }
-      highlightUnbalanced();
-    };
-
-    const highlightUnbalanced = () => {
-      bracketBtn.style.backgroundColor = isBalanced(screen.value) ? '' : 'var(--danger)';
-    };
-
-    const saveToHistory = (expr, result) => {
-      const entry = `${expr} = ${result}`;
-      if (historyArr.length >= 20) historyArr.shift();
-      historyArr.push(entry);
-      updateHistory();
-    };
-
-    const updateHistory = () => {
-      historyDiv.innerHTML = '';
-      [...historyArr].reverse().forEach(entry => {
-        const div = document.createElement('div');
-        div.textContent = entry;
-        div.title = 'Click to reuse';
-        div.onclick = () => {
-          screen.value = entry.split('=')[0].trim();
-          highlightUnbalanced();
-        };
-        historyDiv.appendChild(div);
-      });
-    };
-
-    const copyResult = () => {
-      const val = screen.value.trim();
-      if (val) {
-        navigator.clipboard.writeText(val)
-          .then(() => showAlert('✅ Copied to clipboard', 'success'))
-          .catch(() => showAlert('❌ Copy failed', 'error'));
+        renderHistory();
+      } catch (e) {
+        toast('Invalid Expression');
       }
     };
 
-    const getFavorites = () => {
-      try {
-        return JSON.parse(localStorage.getItem('favorites') || '[]');
-      } catch {
-        return [];
-      }
-    };
+    const del = () => screen.value = screen.value.slice(0, -1);
+    const clearScreen = () => screen.value = '';
 
-    const saveFavorite = () => {
-      const expr = screen.value.trim();
-      if (!expr) return;
-      let favs = getFavorites();
-      if (!favs.includes(expr)) {
-        favs.push(expr);
-        localStorage.setItem('favorites', JSON.stringify(favs));
-        updateFavorites();
-        showAlert('⭐ Added to Favorites');
-      } else {
-        showAlert('⚠️ Already in Favorites');
-      }
-    };
-
-    const updateFavorites = () => {
-      favoritesDiv.innerHTML = '';
-      getFavorites().forEach(expr => {
-        const btn = document.createElement('button');
-        btn.textContent = expr;
-        btn.onclick = () => {
-          screen.value = expr;
-          highlightUnbalanced();
-        };
-        favoritesDiv.appendChild(btn);
-      });
-    };
-
-    const startVoice = () => {
-      try {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) throw new Error();
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'en-US';
-        recognition.onresult = e => {
-          const spoken = e.results[0][0].transcript.toLowerCase();
-          const parsed = parseSpokenMath(spoken);
-          if (parsed) {
-            screen.value += parsed;
-            highlightUnbalanced();
-          } else {
-            showAlert('❌ Could not parse voice input', 'error');
-          }
-        };
-        recognition.onerror = e => showAlert(`🎤 Error: ${e.error}`, 'error');
-        recognition.start();
-      } catch {
-        showAlert('🎤 Voice input not supported', 'error');
-      }
-    };
-
-    const parseSpokenMath = (input) => {
-      return input
-        .replace(/plus/g, '+')
-        .replace(/minus/g, '-')
-        .replace(/(times|multiply|into)/g, '*')
-        .replace(/(divided by|divide|over)/g, '/')
-        .replace(/equals?/g, '=')
-        .replace(/[^\d+\-*/().]/g, '')
-        .replace(/\s+/g, '');
+    const renderHistory = () => {
+      const container = document.getElementById('history');
+      container.innerHTML = '<h4>History</h4>' + history.slice(-10).map(x => `<div>${x}</div>`).join('');
     };
 
     const changeTheme = theme => {
       document.body.className = theme;
-      themeSelect.value = theme;
       localStorage.setItem('theme', theme);
     };
 
-    const autoSwitchTheme = () => {
-      const hour = new Date().getHours();
-      const defaultTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
-      const savedTheme = localStorage.getItem('theme') || defaultTheme;
-      changeTheme(savedTheme);
-    };
-
-    const showAlert = (msg, type = 'info') => {
-      alert(msg); // Replace later with toast popup
-    };
-
     window.onload = () => {
-      updateFavorites();
-      autoSwitchTheme();
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      themeSelect.value = savedTheme;
+      changeTheme(savedTheme);
+      renderHistory();
     };
   </script>
 </body>
