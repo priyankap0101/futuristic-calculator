@@ -87,7 +87,7 @@ body {
 }
 
 .buttons button:hover {
-  transform: scale(1.08);
+  transform: scale(1.1);
   box-shadow: 0 8px 28px rgba(0, 255, 231, 0.5);
   background: linear-gradient(135deg, var(--accent-dark), var(--accent));
 }
@@ -97,19 +97,19 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 160%;
-  height: 160%;
+  width: 180%;
+  height: 180%;
   background: rgba(255, 255, 255, 0.2);
-  transform: translate(-50%, -50%) scale(0.5);
+  transform: translate(-50%, -50%) scale(0.6);
   border-radius: 50%;
   animation: ripple 0.45s ease-out;
-  z-index: 2;
+  z-index: 1;
   pointer-events: none;
 }
 
 @keyframes ripple {
   to {
-    transform: translate(-50%, -50%) scale(1.6);
+    transform: translate(-50%, -50%) scale(1.8);
     opacity: 0;
   }
 }
