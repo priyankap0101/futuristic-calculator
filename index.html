@@ -5,190 +5,188 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Futuristic Calculator</title>
   <style>
-:root {
-  --bg: #0d0d0f;
-  --text: #f0f0f0;
-  --accent: #00ffe7;
-  --accent-dark: #00cabb;
-  --danger: #ff4d4d;
+    :root {
+      --bg: #0d0d0f;
+      --text: #f0f0f0;
+      --accent: #00ffe7;
+      --accent-dark: #00cabb;
+      --danger: #ff4d4d;
 
-  --glass: rgba(255, 255, 255, 0.05);
-  --glass-light: rgba(255, 255, 255, 0.08);
-  --inset: inset 0 0 10px rgba(0, 255, 231, 0.08);
-  --glow: 0 0 20px var(--accent);
-  --shadow-xl: 0 0 32px rgba(0, 255, 231, 0.35);
+      --glass: rgba(255, 255, 255, 0.05);
+      --glass-light: rgba(255, 255, 255, 0.08);
+      --inset: inset 0 0 10px rgba(0, 255, 231, 0.08);
+      --glow: 0 0 20px var(--accent);
+      --shadow-xl: 0 0 32px rgba(0, 255, 231, 0.35);
 
-  --radius: 16px;
-  --transition: 0.3s ease;
-}
+      --radius: 16px;
+      --transition: 0.3s ease;
+    }
 
-body {
-  margin: 0;
-  padding: 2rem;
-  font-family: 'Segoe UI', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  overflow-x: hidden;
-  transition: background var(--transition), color var(--transition);
-}
+    body {
+      margin: 0;
+      padding: 2rem;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background var(--transition), color var(--transition);
+    }
 
-.calculator {
-  width: 100%;
-  max-width: 420px;
-  padding: 24px;
-  background: var(--glass);
-  border: 1px solid var(--glass-light);
-  border-radius: var(--radius);
-  box-shadow: var(--glow), var(--shadow-xl);
-  backdrop-filter: blur(20px);
-  transition: var(--transition);
-}
+    .calculator {
+      width: 100%;
+      max-width: 420px;
+      padding: 24px;
+      background: var(--glass);
+      border: 1px solid var(--glass-light);
+      border-radius: var(--radius);
+      box-shadow: var(--glow), var(--shadow-xl);
+      backdrop-filter: blur(20px);
+      transition: var(--transition);
+    }
 
-#screen {
-  width: 100%;
-  height: 64px;
-  font-size: 1.6em;
-  text-align: right;
-  padding: 14px;
-  margin-bottom: 18px;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text);
-  border: none;
-  border-radius: var(--radius);
-  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
-  transition: var(--transition);
-}
+    #screen {
+      width: 100%;
+      height: 64px;
+      font-size: 1.6em;
+      text-align: right;
+      padding: 14px;
+      margin-bottom: 18px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border: none;
+      border-radius: var(--radius);
+      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
+      transition: var(--transition);
+    }
 
-.buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
 
-.buttons button,
-#favorites button {
-  position: relative;
-  overflow: hidden;
-  padding: 16px;
-  font-size: 1.1em;
-  font-weight: 600;
-  color: #000;
-  border: none;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-  box-shadow: 0 4px 16px rgba(0, 255, 231, 0.3);
-  cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.3s;
-}
+    .buttons button,
+    #favorites button {
+      position: relative;
+      overflow: hidden;
+      padding: 16px;
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #000;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      box-shadow: 0 4px 16px rgba(0, 255, 231, 0.3);
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.3s;
+    }
 
-.buttons button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 8px 28px rgba(0, 255, 231, 0.5);
-  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
-}
+    .buttons button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 28px rgba(0, 255, 231, 0.5);
+      background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+    }
 
-.buttons button:active::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 180%;
-  height: 180%;
-  background: rgba(255, 255, 255, 0.2);
-  transform: translate(-50%, -50%) scale(0.6);
-  border-radius: 50%;
-  animation: ripple 0.45s ease-out;
-  z-index: 1;
-  pointer-events: none;
-}
+    .buttons button:active::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 180%;
+      height: 180%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%) scale(0.6);
+      border-radius: 50%;
+      animation: ripple 0.45s ease-out;
+      z-index: 1;
+      pointer-events: none;
+    }
 
-@keyframes ripple {
-  to {
-    transform: translate(-50%, -50%) scale(1.8);
-    opacity: 0;
-  }
-}
+    @keyframes ripple {
+      to {
+        transform: translate(-50%, -50%) scale(1.8);
+        opacity: 0;
+      }
+    }
 
-#favorites {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 18px;
-}
+    #favorites {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
 
-#favorites button {
-  font-size: 0.9em;
-  padding: 10px 14px;
-  background: #181818;
-  color: var(--accent);
-  box-shadow: 0 2px 10px rgba(0, 255, 231, 0.15);
-  border-radius: 10px;
-  transition: var(--transition);
-}
+    #favorites button {
+      font-size: 0.9em;
+      padding: 10px 14px;
+      background: #181818;
+      color: var(--accent);
+      box-shadow: 0 2px 10px rgba(0, 255, 231, 0.15);
+      border-radius: 10px;
+      transition: var(--transition);
+    }
 
-#history,
-#favorites {
-  margin-top: 20px;
-  background: rgba(255, 255, 255, 0.04);
-  padding: 14px;
-  border-radius: var(--radius);
-  max-height: 180px;
-  overflow-y: auto;
-  box-shadow: var(--inset);
-  transition: var(--transition);
-  scrollbar-width: thin;
-  scrollbar-color: var(--accent-dark) transparent;
-}
+    #history,
+    #favorites {
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 14px;
+      border-radius: var(--radius);
+      max-height: 180px;
+      overflow-y: auto;
+      box-shadow: var(--inset);
+      transition: var(--transition);
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent-dark) transparent;
+    }
 
-#history::-webkit-scrollbar,
-#favorites::-webkit-scrollbar {
-  width: 6px;
-}
+    #history::-webkit-scrollbar,
+    #favorites::-webkit-scrollbar {
+      width: 6px;
+    }
 
-#history::-webkit-scrollbar-thumb,
-#favorites::-webkit-scrollbar-thumb {
-  background-color: var(--accent-dark);
-  border-radius: 10px;
-}
+    #history::-webkit-scrollbar-thumb,
+    #favorites::-webkit-scrollbar-thumb {
+      background-color: var(--accent-dark);
+      border-radius: 10px;
+    }
 
-#history div {
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.03);
-  margin-bottom: 6px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background var(--transition);
-}
+    #history div {
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      margin-bottom: 6px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
 
-#history div:hover {
-  background: rgba(0, 255, 231, 0.25);
-  color: #000;
-}
+    #history div:hover {
+      background: rgba(0, 255, 231, 0.25);
+      color: #000;
+    }
 
-#themeSelect {
-  margin-top: 24px;
-  padding: 10px 16px;
-  font-size: 1em;
-  border-radius: 12px;
-  background: #111;
-  border: 1px solid var(--accent);
-  color: var(--accent);
-  box-shadow: 0 0 12px var(--accent);
-  cursor: pointer;
-  transition: var(--transition);
-}
+    #themeSelect {
+      margin-top: 24px;
+      padding: 10px 16px;
+      font-size: 1em;
+      border-radius: 12px;
+      background: #111;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+      cursor: pointer;
+      transition: var(--transition);
+    }
 
-#themeSelect:hover {
-  background: #151515;
-  box-shadow: 0 0 18px var(--accent);
-}
-
-
+    #themeSelect:hover {
+      background: #151515;
+      box-shadow: 0 0 18px var(--accent);
+    }
   </style>
 </head>
 <body>
