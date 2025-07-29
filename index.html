@@ -143,54 +143,85 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/mathjs/lib/browser/math.min.js"></script>
   <script>
-    const screen = document.getElementById('screen');
-    const themeSelect = document.getElementById('themeSelect');
-    let history = JSON.parse(localStorage.getItem('history')) || [];
+  const screen = document.getElementById('screen');
+const themeSelect = document.getElementById('themeSelect');
+const historyContainer = document.getElementById('history');
+let history = JSON.parse(localStorage.getItem('history')) || [];
 
-    const toast = msg => {
-      const t = document.createElement('div');
-      t.className = 'toast';
-      t.innerText = msg;
-      document.body.appendChild(t);
-      setTimeout(() => t.remove(), 3000);
-    };
+// Show toast message
+const toast = (msg) => {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerText = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+};
 
-    const append = val => {
-      if (/[^\d)]+$/.test(screen.value) && /[^\d(]+/.test(val)) return;
-      screen.value += val;
-    };
+// Append value to screen with smart validation
+const append = (val) => {
+  const current = screen.value;
+  const lastChar = current.slice(-1);
 
-    const calculate = () => {
-      try {
-        const result = math.evaluate(screen.value);
-        history.push(`${screen.value} = ${result}`);
-        localStorage.setItem('history', JSON.stringify(history));
-        screen.value = result;
-        renderHistory();
-      } catch (e) {
-        toast('Invalid Expression');
-      }
-    };
+  if (
+    /[+\-*/.]/.test(lastChar) &&
+    /[+\-*/.]/.test(val)
+  ) return;
 
-    const del = () => screen.value = screen.value.slice(0, -1);
-    const clearScreen = () => screen.value = '';
+  screen.value += val;
+};
 
-    const renderHistory = () => {
-      const container = document.getElementById('history');
-      container.innerHTML = '<h4>History</h4>' + history.slice(-10).map(x => `<div>${x}</div>`).join('');
-    };
+// Evaluate expression and update screen/history
+const calculate = () => {
+  try {
+    const expr = screen.value;
+    if (!expr.trim()) return;
 
-    const changeTheme = theme => {
-      document.body.className = theme;
-      localStorage.setItem('theme', theme);
-    };
+    const result = math.evaluate(expr);
+    screen.value = result;
+    history.push(`${expr} = ${result}`);
+    localStorage.setItem('history', JSON.stringify(history));
+    renderHistory();
+  } catch (e) {
+    toast('Invalid Expression');
+  }
+};
 
-    window.onload = () => {
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      themeSelect.value = savedTheme;
-      changeTheme(savedTheme);
-      renderHistory();
-    };
+// Delete last character
+const del = () => {
+  screen.value = screen.value.slice(0, -1);
+};
+
+// Clear screen
+const clearScreen = () => {
+  screen.value = '';
+};
+
+// Render last 10 entries in history
+const renderHistory = () => {
+  historyContainer.innerHTML = '<h4>History</h4>' +
+    history.slice(-10).reverse().map(entry => `<div onclick="loadHistory('${entry}')">${entry}</div>`).join('');
+};
+
+// Load past expression from history
+const loadHistory = (entry) => {
+  const expr = entry.split('=')[0].trim();
+  screen.value = expr;
+};
+
+// Theme switch and persistence
+const changeTheme = (theme) => {
+  document.body.className = theme;
+  localStorage.setItem('theme', theme);
+};
+
+// On load: apply saved theme and load history
+window.onload = () => {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  themeSelect.value = savedTheme;
+  changeTheme(savedTheme);
+  renderHistory();
+};
+
   </script>
 </body>
 </html>
