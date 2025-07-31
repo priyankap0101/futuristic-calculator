@@ -143,22 +143,25 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/mathjs/lib/browser/math.min.js"></script>
   <script>
+// Element references
 const screen = document.getElementById('screen');
 const themeSelect = document.getElementById('themeSelect');
 const historyContainer = document.getElementById('history');
+
+// Load saved history or initialize
 let history = JSON.parse(localStorage.getItem('history')) || [];
 
-// 🟡 Show a temporary toast message
-function toast(message) {
-  const toastElem = document.createElement('div');
-  toastElem.className = 'toast';
-  toastElem.innerText = message;
-  document.body.appendChild(toastElem);
-  setTimeout(() => toastElem.remove(), 3000);
+// ✅ Show toast notification
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerText = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
 }
 
-// 🔵 Append input to screen with smart operator blocking
-function append(value) {
+// ✅ Append input to screen (prevent duplicate operators)
+function appendToScreen(value) {
   const current = screen.value;
   const lastChar = current.slice(-1);
   const isOperator = /[+\-*/.]/;
@@ -167,66 +170,67 @@ function append(value) {
   screen.value += value;
 }
 
-// 🟢 Evaluate current expression and update screen + history
-function calculate() {
-  const expression = screen.value.trim();
-  if (!expression) return;
+// ✅ Evaluate expression, update screen & history
+function evaluateExpression() {
+  const expr = screen.value.trim();
+  if (!expr) return;
 
   try {
-    const result = math.evaluate(expression);
+    const result = math.evaluate(expr);
     screen.value = result;
-    saveToHistory(expression, result);
+    addToHistory(expr, result);
   } catch (err) {
-    toast('❌ Invalid Expression');
+    showToast('❌ Invalid Expression');
   }
 }
 
-// 🔵 Save evaluated expression to local storage history
-function saveToHistory(expression, result) {
+// ✅ Save evaluated result to history
+function addToHistory(expression, result) {
   const entry = `${expression} = ${result}`;
   history.push(entry);
+  if (history.length > 50) history.shift(); // Limit history size
   localStorage.setItem('history', JSON.stringify(history));
-  renderHistory();
+  updateHistoryDisplay();
 }
 
-// 🟣 Show last 10 history entries (most recent first)
-function renderHistory() {
-  const entries = history.slice(-10).reverse();
+// ✅ Render history entries
+function updateHistoryDisplay() {
+  const latestEntries = history.slice(-10).reverse();
   historyContainer.innerHTML = '<h4>History</h4>' +
-    entries.map(entry => {
+    latestEntries.map(entry => {
       const safeEntry = entry.replace(/'/g, "\\'");
-      return `<div class="history-entry" onclick="loadHistory('${safeEntry}')">${entry}</div>`;
+      return `<div class="history-entry" onclick="loadFromHistory('${safeEntry}')">${entry}</div>`;
     }).join('');
 }
 
-// 🟠 Load expression from history back to screen
-function loadHistory(entry) {
+// ✅ Load expression from history
+function loadFromHistory(entry) {
   const expression = entry.split('=')[0].trim();
   screen.value = expression;
 }
 
-// 🔴 Remove last character from input
-function del() {
+// ✅ Delete last character
+function deleteLastChar() {
   screen.value = screen.value.slice(0, -1);
 }
 
-// 🔴 Clear input field
+// ✅ Clear entire input
 function clearScreen() {
   screen.value = '';
 }
 
-// 🟣 Change and save theme
-function changeTheme(theme) {
+// ✅ Apply theme and save preference
+function applyTheme(theme) {
   document.body.className = theme;
   localStorage.setItem('theme', theme);
 }
 
-// 🟢 On page load: apply saved theme + load history
+// ✅ Initialization: load theme and history
 window.onload = () => {
   const savedTheme = localStorage.getItem('theme') || 'dark';
   themeSelect.value = savedTheme;
-  changeTheme(savedTheme);
-  renderHistory();
+  applyTheme(savedTheme);
+  updateHistoryDisplay();
 };
 
   </script>
