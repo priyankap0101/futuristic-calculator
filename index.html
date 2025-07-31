@@ -148,7 +148,7 @@ const themeSelect = document.getElementById('themeSelect');
 const historyContainer = document.getElementById('history');
 let history = JSON.parse(localStorage.getItem('history')) || [];
 
-// Utility: Show toast message
+// 🟡 Show a temporary toast message
 function toast(message) {
   const toastElem = document.createElement('div');
   toastElem.className = 'toast';
@@ -157,75 +157,77 @@ function toast(message) {
   setTimeout(() => toastElem.remove(), 3000);
 }
 
-// Input handler with operator validation
+// 🔵 Append input to screen with smart operator blocking
 function append(value) {
-  const lastChar = screen.value.slice(-1);
+  const current = screen.value;
+  const lastChar = current.slice(-1);
   const isOperator = /[+\-*/.]/;
+
   if (isOperator.test(lastChar) && isOperator.test(value)) return;
   screen.value += value;
 }
 
-// Evaluate expression and save to history
+// 🟢 Evaluate current expression and update screen + history
 function calculate() {
-  const expr = screen.value.trim();
-  if (!expr) return;
+  const expression = screen.value.trim();
+  if (!expression) return;
 
   try {
-    const result = math.evaluate(expr);
+    const result = math.evaluate(expression);
     screen.value = result;
-    addToHistory(expr, result);
+    saveToHistory(expression, result);
   } catch (err) {
     toast('❌ Invalid Expression');
   }
 }
 
-// Add entry to history and render
-function addToHistory(expression, result) {
+// 🔵 Save evaluated expression to local storage history
+function saveToHistory(expression, result) {
   const entry = `${expression} = ${result}`;
   history.push(entry);
   localStorage.setItem('history', JSON.stringify(history));
   renderHistory();
 }
 
-// Render last 10 entries in history
+// 🟣 Show last 10 history entries (most recent first)
 function renderHistory() {
   const entries = history.slice(-10).reverse();
-  historyContainer.innerHTML = '<h4>History</h4>' + entries.map(entry => {
-    const safeEntry = entry.replace(/'/g, "\\'");
-    return `<div class="history-entry" onclick="loadHistory('${safeEntry}')">${entry}</div>`;
-  }).join('');
+  historyContainer.innerHTML = '<h4>History</h4>' +
+    entries.map(entry => {
+      const safeEntry = entry.replace(/'/g, "\\'");
+      return `<div class="history-entry" onclick="loadHistory('${safeEntry}')">${entry}</div>`;
+    }).join('');
 }
 
-// Load past expression into input
+// 🟠 Load expression from history back to screen
 function loadHistory(entry) {
-  const expr = entry.split('=')[0].trim();
-  screen.value = expr;
+  const expression = entry.split('=')[0].trim();
+  screen.value = expression;
 }
 
-// Delete last character
+// 🔴 Remove last character from input
 function del() {
   screen.value = screen.value.slice(0, -1);
 }
 
-// Clear screen input
+// 🔴 Clear input field
 function clearScreen() {
   screen.value = '';
 }
 
-// Apply theme
+// 🟣 Change and save theme
 function changeTheme(theme) {
   document.body.className = theme;
   localStorage.setItem('theme', theme);
 }
 
-// Initialization on load
+// 🟢 On page load: apply saved theme + load history
 window.onload = () => {
   const savedTheme = localStorage.getItem('theme') || 'dark';
   themeSelect.value = savedTheme;
   changeTheme(savedTheme);
   renderHistory();
 };
-
 
   </script>
 </body>
