@@ -143,15 +143,15 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/mathjs/lib/browser/math.min.js"></script>
   <script>
-// Element references
+// DOM references
 const screen = document.getElementById('screen');
 const themeSelect = document.getElementById('themeSelect');
 const historyContainer = document.getElementById('history');
 
-// Load saved history or initialize
+// Load stored history or start fresh
 let history = JSON.parse(localStorage.getItem('history')) || [];
 
-// ✅ Show toast notification
+// ✅ Toast alert
 function showToast(message) {
   const toast = document.createElement('div');
   toast.className = 'toast';
@@ -160,72 +160,86 @@ function showToast(message) {
   setTimeout(() => toast.remove(), 3000);
 }
 
-// ✅ Append input to screen (prevent duplicate operators)
+// ✅ Append value to screen with operator validation
 function appendToScreen(value) {
   const current = screen.value;
   const lastChar = current.slice(-1);
-  const isOperator = /[+\-*/.]/;
+  const isOp = /[+\-*/.]/;
 
-  if (isOperator.test(lastChar) && isOperator.test(value)) return;
+  if (isOp.test(lastChar) && isOp.test(value)) return;
   screen.value += value;
 }
 
-// ✅ Evaluate expression, update screen & history
+// ✅ Bracket balance checker (basic)
+function isBalancedBrackets(expr) {
+  let count = 0;
+  for (let ch of expr) {
+    if (ch === '(') count++;
+    else if (ch === ')') count--;
+    if (count < 0) return false;
+  }
+  return count === 0;
+}
+
+// ✅ Evaluate expression using math.js safely
 function evaluateExpression() {
   const expr = screen.value.trim();
   if (!expr) return;
 
+  if (!isBalancedBrackets(expr)) {
+    return showToast('🛑 Unbalanced Brackets');
+  }
+
   try {
     const result = math.evaluate(expr);
     screen.value = result;
-    addToHistory(expr, result);
+    saveToHistory(expr, result);
   } catch (err) {
     showToast('❌ Invalid Expression');
   }
 }
 
-// ✅ Save evaluated result to history
-function addToHistory(expression, result) {
+// ✅ Add to history and save to localStorage
+function saveToHistory(expression, result) {
   const entry = `${expression} = ${result}`;
   history.push(entry);
-  if (history.length > 50) history.shift(); // Limit history size
+  if (history.length > 50) history.shift(); // max 50 entries
   localStorage.setItem('history', JSON.stringify(history));
   updateHistoryDisplay();
 }
 
-// ✅ Render history entries
+// ✅ Render history UI
 function updateHistoryDisplay() {
-  const latestEntries = history.slice(-10).reverse();
-  historyContainer.innerHTML = '<h4>History</h4>' +
-    latestEntries.map(entry => {
-      const safeEntry = entry.replace(/'/g, "\\'");
-      return `<div class="history-entry" onclick="loadFromHistory('${safeEntry}')">${entry}</div>`;
-    }).join('');
+  const latest = history.slice(-10).reverse(); // last 10
+  historyContainer.innerHTML = `<h4>History</h4>` + latest.map((entry, i) => {
+    const safe = entry.replace(/'/g, "\\'");
+    return `<div class="history-entry" onclick="loadFromHistory('${safe}')">${entry}</div>`;
+  }).join('');
 }
 
-// ✅ Load expression from history
+// ✅ Load expression back from history
 function loadFromHistory(entry) {
   const expression = entry.split('=')[0].trim();
   screen.value = expression;
 }
 
-// ✅ Delete last character
+// ✅ Backspace
 function deleteLastChar() {
   screen.value = screen.value.slice(0, -1);
 }
 
-// ✅ Clear entire input
+// ✅ Clear all
 function clearScreen() {
   screen.value = '';
 }
 
-// ✅ Apply theme and save preference
+// ✅ Apply theme
 function applyTheme(theme) {
   document.body.className = theme;
   localStorage.setItem('theme', theme);
 }
 
-// ✅ Initialization: load theme and history
+// ✅ Load on page ready
 window.onload = () => {
   const savedTheme = localStorage.getItem('theme') || 'dark';
   themeSelect.value = savedTheme;
