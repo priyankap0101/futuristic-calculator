@@ -6,107 +6,160 @@
   <title>Futuristic Calculator</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathjs@12.4.1/lib/browser/math.min.js">
   <style>
-    :root {
-      --bg: #0f0f0f;
-      --text: #f0f0f0;
-      --accent: #00ffe7;
-      --danger: #ff4d4d;
-      --glass: rgba(255, 255, 255, 0.1);
-    }
-    body.light {
-      --bg: #f9f9f9;
-      --text: #000;
-      --accent: #0077ff;
-      --glass: rgba(0, 0, 0, 0.05);
-    }
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      overflow-x: hidden;
-      transition: background 0.3s, color 0.3s;
-    }
-    .calculator {
-      backdrop-filter: blur(10px);
-      background: var(--glass);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 20px;
-      box-shadow: 0 0 30px var(--accent);
-      padding: 20px;
-      width: 90%;
-      max-width: 400px;
-    }
-    #screen {
-      width: 100%;
-      height: 60px;
-      font-size: 1.5em;
-      text-align: right;
-      margin-bottom: 10px;
-      padding: 10px;
-      border: none;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-    }
-    .buttons {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
-    .buttons button, #favorites button {
-      padding: 15px;
-      font-size: 1.2em;
-      border: none;
-      border-radius: 12px;
-      background: var(--accent);
-      color: #000;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .buttons button:hover {
-      transform: scale(1.05);
-    }
-    #history, #favorites {
-      margin-top: 15px;
-      max-height: 150px;
-      overflow-y: auto;
-      background: rgba(255,255,255,0.05);
-      padding: 10px;
-      border-radius: 10px;
-    }
-    #favorites button {
-      background: #333;
-      color: var(--accent);
-      margin: 2px;
-    }
-    #themeSelect {
-      margin: 10px auto;
-      display: block;
-    }
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--accent);
-      color: #000;
-      padding: 10px 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px var(--accent);
-      z-index: 9999;
-      animation: fade 3s forwards;
-    }
-    @keyframes fade {
-      0% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { opacity: 0; }
-    }
+   :root {
+  --bg: #0f0f0f;
+  --text: #f0f0f0;
+  --accent: #00ffe7;
+  --danger: #ff4d4d;
+  --glass: rgba(255, 255, 255, 0.08);
+}
+
+body.light {
+  --bg: #f9f9f9;
+  --text: #000;
+  --accent: #0077ff;
+  --glass: rgba(0, 0, 0, 0.05);
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+.calculator {
+  backdrop-filter: blur(12px);
+  background-color: var(--glass);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 0 20px var(--accent);
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+  transition: all 0.3s ease;
+}
+
+#screen {
+  width: 100%;
+  height: 60px;
+  font-size: 1.5rem;
+  text-align: right;
+  margin-bottom: 12px;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.07);
+  color: var(--text);
+  outline: none;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.buttons button,
+#favorites button {
+  padding: 14px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 12px;
+  background-color: var(--accent);
+  color: #000;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.buttons button:hover {
+  transform: scale(1.07);
+  filter: brightness(1.05);
+}
+
+#favorites button {
+  background-color: #222;
+  color: var(--accent);
+  margin: 4px;
+  font-size: 1rem;
+}
+
+#history,
+#favorites {
+  margin-top: 18px;
+  max-height: 160px;
+  overflow-y: auto;
+  background-color: rgba(255, 255, 255, 0.06);
+  padding: 10px;
+  border-radius: 12px;
+  width: 100%;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#themeSelect {
+  margin: 15px 0;
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background-color: transparent;
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--accent);
+  color: #000;
+  padding: 12px 24px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px var(--accent);
+  z-index: 9999;
+  animation: fadeout 3s forwards;
+  font-weight: bold;
+}
+
+@keyframes fadeout {
+  0% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .calculator {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .buttons button {
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  #screen {
+    font-size: 1.2rem;
+    height: 50px;
+    padding: 10px;
+  }
+
+  #themeSelect {
+    font-size: 0.9rem;
+  }
+}
+
   </style>
 </head>
 <body>
