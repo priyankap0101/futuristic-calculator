@@ -6,7 +6,7 @@
   <title>Futuristic Calculator</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathjs@12.4.1/lib/browser/math.min.js">
   <style>
-   :root {
+:root {
   --bg: #0f0f0f;
   --text: #f0f0f0;
   --accent: #00ffe7;
@@ -31,59 +31,61 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: background 0.4s ease, color 0.4s ease;
   padding: 20px;
   overflow-x: hidden;
 }
 
 .calculator {
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   background-color: var(--glass);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
-  box-shadow: 0 0 20px var(--accent);
-  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 0 40px var(--accent);
+  padding: 24px;
   width: 100%;
-  max-width: 400px;
-  transition: all 0.3s ease;
+  max-width: 420px;
+  transition: all 0.3s ease-in-out;
 }
 
 #screen {
   width: 100%;
-  height: 60px;
-  font-size: 1.5rem;
+  height: 64px;
+  font-size: 1.6rem;
   text-align: right;
-  margin-bottom: 12px;
-  padding: 12px;
+  margin-bottom: 16px;
+  padding: 14px;
   border: none;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  background-color: rgba(255, 255, 255, 0.06);
   color: var(--text);
   outline: none;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
 }
 
 .buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  gap: 14px;
 }
 
 .buttons button,
 #favorites button {
-  padding: 14px;
+  padding: 16px;
   font-size: 1.2rem;
-  font-weight: 500;
+  font-weight: 600;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   background-color: var(--accent);
   color: #000;
   cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 12px var(--accent);
 }
 
 .buttons button:hover {
-  transform: scale(1.07);
-  filter: brightness(1.05);
+  transform: scale(1.1);
+  box-shadow: 0 0 18px var(--accent);
 }
 
 #favorites button {
@@ -91,29 +93,31 @@ body {
   color: var(--accent);
   margin: 4px;
   font-size: 1rem;
+  box-shadow: none;
 }
 
 #history,
 #favorites {
-  margin-top: 18px;
-  max-height: 160px;
+  margin-top: 20px;
+  max-height: 180px;
   overflow-y: auto;
-  background-color: rgba(255, 255, 255, 0.06);
-  padding: 10px;
-  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 14px;
   width: 100%;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.15);
 }
 
 #themeSelect {
-  margin: 15px 0;
-  padding: 6px;
-  border-radius: 8px;
+  margin: 20px 0;
+  padding: 8px 12px;
+  border-radius: 10px;
   border: 1px solid var(--accent);
   background-color: transparent;
   color: var(--text);
   font-size: 1rem;
   cursor: pointer;
+  box-shadow: 0 0 8px var(--accent);
 }
 
 .toast {
@@ -124,8 +128,8 @@ body {
   background-color: var(--accent);
   color: #000;
   padding: 12px 24px;
-  border-radius: 12px;
-  box-shadow: 0 0 15px var(--accent);
+  border-radius: 14px;
+  box-shadow: 0 0 18px var(--accent);
   z-index: 9999;
   animation: fadeout 3s forwards;
   font-weight: bold;
@@ -137,11 +141,11 @@ body {
   100% { opacity: 0; }
 }
 
-/* Responsive adjustments */
+/* Responsive design */
 @media (max-width: 480px) {
   .calculator {
-    padding: 16px;
-    border-radius: 16px;
+    padding: 18px;
+    border-radius: 18px;
   }
 
   .buttons button {
@@ -150,8 +154,8 @@ body {
   }
 
   #screen {
-    font-size: 1.2rem;
-    height: 50px;
+    font-size: 1.3rem;
+    height: 52px;
     padding: 10px;
   }
 
