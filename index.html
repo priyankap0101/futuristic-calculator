@@ -37,12 +37,12 @@ body {
 }
 
 .calculator {
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(18px);
   background-color: var(--glass);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 24px;
-  box-shadow: 0 0 40px var(--accent);
-  padding: 24px;
+  box-shadow: 0 0 45px var(--accent);
+  padding: 28px;
   width: 100%;
   max-width: 420px;
   transition: all 0.3s ease-in-out;
@@ -60,7 +60,7 @@ body {
   background-color: rgba(255, 255, 255, 0.06);
   color: var(--text);
   outline: none;
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
 .buttons {
@@ -85,7 +85,12 @@ body {
 
 .buttons button:hover {
   transform: scale(1.1);
-  box-shadow: 0 0 18px var(--accent);
+  box-shadow: 0 0 20px var(--accent);
+}
+
+.buttons button:focus {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
 }
 
 #favorites button {
@@ -105,19 +110,24 @@ body {
   padding: 12px;
   border-radius: 14px;
   width: 100%;
-  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.2);
 }
 
 #themeSelect {
   margin: 20px 0;
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
   border: 1px solid var(--accent);
-  background-color: transparent;
+  background-color: rgba(255, 255, 255, 0.04);
   color: var(--text);
   font-size: 1rem;
   cursor: pointer;
-  box-shadow: 0 0 8px var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  transition: all 0.2s ease;
+}
+
+#themeSelect:hover {
+  background-color: var(--glass);
 }
 
 .toast {
@@ -129,7 +139,7 @@ body {
   color: #000;
   padding: 12px 24px;
   border-radius: 14px;
-  box-shadow: 0 0 18px var(--accent);
+  box-shadow: 0 0 22px var(--accent);
   z-index: 9999;
   animation: fadeout 3s forwards;
   font-weight: bold;
@@ -144,7 +154,7 @@ body {
 /* Responsive design */
 @media (max-width: 480px) {
   .calculator {
-    padding: 18px;
+    padding: 20px;
     border-radius: 18px;
   }
 
@@ -163,6 +173,7 @@ body {
     font-size: 0.9rem;
   }
 }
+
 
   </style>
 </head>
