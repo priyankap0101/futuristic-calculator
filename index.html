@@ -12,18 +12,13 @@
       --danger: #ff4d4d;
       --glass: rgba(255, 255, 255, 0.07);
     }
-
     body.light {
       --bg: #ffffff;
       --text: #111;
       --accent: #0077ff;
       --glass: rgba(0, 0, 0, 0.05);
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       padding: 20px;
@@ -37,7 +32,6 @@
       min-height: 100vh;
       transition: all 0.4s ease;
     }
-
     .calculator {
       background: var(--glass);
       backdrop-filter: blur(16px) saturate(180%);
@@ -47,9 +41,7 @@
       padding: 32px 24px;
       width: 100%;
       max-width: 420px;
-      transition: all 0.3s ease;
     }
-
     #screen {
       width: 100%;
       height: 64px;
@@ -62,15 +54,21 @@
       color: var(--text);
       box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
       outline: none;
-      margin-bottom: 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
     }
-
+    #preview {
+      text-align: right;
+      font-size: 1rem;
+      color: var(--accent);
+      margin-bottom: 16px;
+      min-height: 20px;
+    }
     .buttons {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 12px;
     }
-
     button {
       font-size: 1.2rem;
       padding: 16px;
@@ -83,12 +81,10 @@
       transition: transform 0.2s ease, box-shadow 0.3s ease;
       box-shadow: 0 0 12px var(--accent), 0 4px 8px rgba(0,0,0,0.3);
     }
-
     button:hover {
       transform: scale(1.06);
       box-shadow: 0 0 24px var(--accent), 0 6px 18px rgba(0,0,0,0.5);
     }
-
     #favorites button {
       background-color: #222;
       color: var(--accent);
@@ -96,9 +92,7 @@
       margin: 4px;
       box-shadow: none;
     }
-
-    #history,
-    #favorites {
+    #history {
       margin-top: 20px;
       max-height: 180px;
       overflow-y: auto;
@@ -107,24 +101,18 @@
       border-radius: 14px;
       box-shadow: inset 0 0 14px rgba(0,0,0,0.2);
     }
-
     .history-entry {
       padding: 6px 0;
       cursor: pointer;
     }
-
-    #themeSelect {
-      margin: 16px 0;
-      padding: 10px 14px;
-      border-radius: 10px;
-      background: var(--glass);
-      color: var(--text);
-      border: 1px solid var(--accent);
-      box-shadow: 0 0 10px var(--accent);
+    #themeToggle {
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 1.4rem;
+      margin-bottom: 16px;
+      border: none;
+      background: transparent;
+      color: var(--text);
     }
-
     .toast {
       position: fixed;
       bottom: 24px;
@@ -139,12 +127,10 @@
       animation: fadeout 3s forwards;
       font-weight: bold;
     }
-
     @keyframes fadeout {
       0%, 85% { opacity: 1; }
       100% { opacity: 0; }
     }
-
     @media (max-width: 480px) {
       .calculator { padding: 20px; }
       button { padding: 12px; font-size: 1rem; }
@@ -154,12 +140,10 @@
 </head>
 <body>
   <div class="calculator">
-    <select id="themeSelect">
-      <option value="dark">Dark Theme</option>
-      <option value="light">Light Theme</option>
-    </select>
+    <button id="themeToggle" onclick="toggleTheme()">🌙</button>
 
-    <input type="text" id="screen" readonly />
+    <input type="text" id="screen" readonly title="Click to copy result"/>
+    <div id="preview"></div>
 
     <div class="buttons">
       <button onclick="append('7')">7</button>
@@ -185,13 +169,16 @@
     </div>
 
     <div id="history"></div>
+    <button style="margin-top: 12px;" onclick="clearHistory()">🗑 Clear History</button>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.1/math.min.js"></script>
   <script>
     const screen = document.getElementById('screen');
-    const themeSelect = document.getElementById('themeSelect');
     const historyContainer = document.getElementById('history');
+    const preview = document.getElementById('preview');
+    const themeToggle = document.getElementById('themeToggle');
+
     let history = JSON.parse(localStorage.getItem('history')) || [];
 
     function toast(message) {
@@ -207,6 +194,16 @@
       const isOp = /[+\-*/.]/;
       if (isOp.test(lastChar) && isOp.test(val)) return;
       screen.value += val;
+      livePreview();
+    }
+
+    function livePreview() {
+      try {
+        const result = math.evaluate(screen.value);
+        preview.innerText = "= " + result;
+      } catch {
+        preview.innerText = '';
+      }
     }
 
     function calculate() {
@@ -215,6 +212,7 @@
       try {
         const res = math.evaluate(expr);
         screen.value = res;
+        preview.innerText = '';
         addToHistory(expr, res);
       } catch {
         toast('❌ Invalid Expression');
@@ -238,27 +236,52 @@
     function loadHistory(entry) {
       const expr = entry.split('=')[0].trim();
       screen.value = expr;
+      livePreview();
     }
 
     function del() {
       screen.value = screen.value.slice(0, -1);
+      livePreview();
     }
 
     function clearScreen() {
       screen.value = '';
+      preview.innerText = '';
     }
 
-    function changeTheme(theme) {
-      document.body.className = theme;
-      localStorage.setItem('theme', theme);
+    function clearHistory() {
+      if (confirm("Clear history?")) {
+        history = [];
+        localStorage.removeItem('history');
+        renderHistory();
+      }
     }
 
-    themeSelect.onchange = () => changeTheme(themeSelect.value);
+    function toggleTheme() {
+      const isLight = document.body.classList.toggle('light');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      themeToggle.textContent = isLight ? '☀️' : '🌙';
+    }
+
+    screen.onclick = () => {
+      if (screen.value) {
+        navigator.clipboard.writeText(screen.value);
+        toast('✅ Result copied!');
+      }
+    };
+
+    document.addEventListener('keydown', e => {
+      const allowedKeys = '0123456789+-*/().';
+      if (allowedKeys.includes(e.key)) append(e.key);
+      if (e.key === 'Enter') calculate();
+      if (e.key === 'Backspace') del();
+      if (e.key === 'Escape') clearScreen();
+    });
 
     window.onload = () => {
       const savedTheme = localStorage.getItem('theme') || 'dark';
-      changeTheme(savedTheme);
-      themeSelect.value = savedTheme;
+      document.body.classList.toggle('light', savedTheme === 'light');
+      themeToggle.textContent = savedTheme === 'light' ? '☀️' : '🌙';
       renderHistory();
     };
   </script>
