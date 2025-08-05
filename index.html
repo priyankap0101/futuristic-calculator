@@ -105,13 +105,18 @@
       padding: 6px 0;
       cursor: pointer;
     }
-    #themeToggle {
+    #themeToggle, #voiceBtn {
       cursor: pointer;
       font-size: 1.4rem;
       margin-bottom: 16px;
       border: none;
       background: transparent;
       color: var(--text);
+    }
+    .header-buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .toast {
       position: fixed;
@@ -140,7 +145,10 @@
 </head>
 <body>
   <div class="calculator">
-    <button id="themeToggle" onclick="toggleTheme()">🌙</button>
+    <div class="header-buttons">
+      <button id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
+      <button id="voiceBtn" onclick="toggleVoice()" aria-label="Start voice input">🎤</button>
+    </div>
 
     <input type="text" id="screen" readonly title="Click to copy result"/>
     <div id="preview"></div>
@@ -178,8 +186,10 @@
     const historyContainer = document.getElementById('history');
     const preview = document.getElementById('preview');
     const themeToggle = document.getElementById('themeToggle');
+    const voiceBtn = document.getElementById('voiceBtn');
 
     let history = JSON.parse(localStorage.getItem('history')) || [];
+    let recognition, recognizing = false;
 
     function toast(message) {
       const t = document.createElement('div');
@@ -277,6 +287,54 @@
       if (e.key === 'Backspace') del();
       if (e.key === 'Escape') clearScreen();
     });
+
+    function toggleVoice() {
+      if (!('webkitSpeechRecognition' in window)) {
+        toast('❌ Voice not supported in this browser');
+        return;
+      }
+
+      const voiceMap = {
+        'plus': '+', 'minus': '-', 'times': '*', 'multiplied by': '*',
+        'divide': '/', 'divided by': '/', 'open bracket': '(', 'close bracket': ')',
+        'point': '.', 'dot': '.', 'equals': '=', 'equal': '='
+      };
+
+      if (!recognition) {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+          recognizing = true;
+          voiceBtn.textContent = '🔴';
+          toast('🎤 Listening...');
+        };
+
+        recognition.onend = () => {
+          recognizing = false;
+          voiceBtn.textContent = '🎤';
+        };
+
+        recognition.onerror = () => {
+          recognizing = false;
+          voiceBtn.textContent = '🎤';
+          toast('❌ Voice error');
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript.toLowerCase();
+          const converted = transcript.split(' ').map(word => voiceMap[word] ?? word).join('');
+          append(converted);
+        };
+      }
+
+      if (recognizing) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    }
 
     window.onload = () => {
       const savedTheme = localStorage.getItem('theme') || 'dark';
