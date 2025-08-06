@@ -12,13 +12,18 @@
       --danger: #ff4d4d;
       --glass: rgba(255, 255, 255, 0.07);
     }
+
     body.light {
       --bg: #ffffff;
       --text: #111;
       --accent: #0077ff;
       --glass: rgba(0, 0, 0, 0.05);
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       padding: 20px;
@@ -32,16 +37,18 @@
       min-height: 100vh;
       transition: all 0.4s ease;
     }
+
     .calculator {
       background: var(--glass);
       backdrop-filter: blur(16px) saturate(180%);
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 24px;
-      box-shadow: 0 0 28px var(--accent);
+      box-shadow: 0 0 32px var(--accent), 0 0 10px rgba(0,0,0,0.3);
       padding: 32px 24px;
       width: 100%;
       max-width: 420px;
     }
+
     #screen {
       width: 100%;
       height: 64px;
@@ -57,6 +64,7 @@
       margin-bottom: 10px;
       cursor: pointer;
     }
+
     #preview {
       text-align: right;
       font-size: 1rem;
@@ -64,11 +72,13 @@
       margin-bottom: 16px;
       min-height: 20px;
     }
+
     .buttons {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 12px;
     }
+
     button {
       font-size: 1.2rem;
       padding: 16px;
@@ -79,12 +89,14 @@
       color: #000;
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.3s ease;
-      box-shadow: 0 0 12px var(--accent), 0 4px 8px rgba(0,0,0,0.3);
+      box-shadow: 0 0 14px var(--accent), 0 4px 12px rgba(0,0,0,0.3);
     }
+
     button:hover {
       transform: scale(1.06);
       box-shadow: 0 0 24px var(--accent), 0 6px 18px rgba(0,0,0,0.5);
     }
+
     #favorites button {
       background-color: #222;
       color: var(--accent);
@@ -92,6 +104,7 @@
       margin: 4px;
       box-shadow: none;
     }
+
     #history {
       margin-top: 20px;
       max-height: 180px;
@@ -101,10 +114,12 @@
       border-radius: 14px;
       box-shadow: inset 0 0 14px rgba(0,0,0,0.2);
     }
+
     .history-entry {
       padding: 6px 0;
       cursor: pointer;
     }
+
     #themeToggle, #voiceBtn {
       cursor: pointer;
       font-size: 1.4rem;
@@ -112,12 +127,15 @@
       border: none;
       background: transparent;
       color: var(--text);
+      filter: drop-shadow(0 0 6px var(--accent));
     }
+
     .header-buttons {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
+
     .toast {
       position: fixed;
       bottom: 24px;
@@ -132,10 +150,12 @@
       animation: fadeout 3s forwards;
       font-weight: bold;
     }
+
     @keyframes fadeout {
       0%, 85% { opacity: 1; }
       100% { opacity: 0; }
     }
+
     @media (max-width: 480px) {
       .calculator { padding: 20px; }
       button { padding: 12px; font-size: 1rem; }
@@ -171,7 +191,7 @@
       <button onclick="calculate()">=</button>
       <button onclick="append('*')">*</button>
       <button onclick="append('(')">(</button>
-      <button onclick="append(')')">)</button>
+      <button onclick="smartClose()">)</button>
       <button onclick="clearScreen()">C</button>
       <button onclick="append('/')">/</button>
     </div>
@@ -205,6 +225,12 @@
       if (isOp.test(lastChar) && isOp.test(val)) return;
       screen.value += val;
       livePreview();
+    }
+
+    function smartClose() {
+      const openCount = (screen.value.match(/\(/g) || []).length;
+      const closeCount = (screen.value.match(/\)/g) || []).length;
+      if (openCount > closeCount) append(')');
     }
 
     function livePreview() {
