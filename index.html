@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🔢 Pro Calculator</title>
   <style>
     :root {
@@ -10,364 +11,206 @@
       --text: #f9f9f9;
       --accent: #00f0ff;
       --danger: #ff4d4d;
-      --glass: rgba(255, 255, 255, 0.07);
-    }
-
-    body.light {
-      --bg: #ffffff;
-      --text: #111;
-      --accent: #0077ff;
-      --glass: rgba(0, 0, 0, 0.05);
-    }
-
-    * {
-      box-sizing: border-box;
+      --glow: 0 0 8px var(--accent);
     }
 
     body {
       margin: 0;
-      padding: 20px;
       font-family: 'Segoe UI', sans-serif;
-      background-color: var(--bg);
+      background: var(--bg);
       color: var(--text);
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      transition: all 0.4s ease;
+      padding: 1rem;
     }
 
     .calculator {
-      background: var(--glass);
-      backdrop-filter: blur(16px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 24px;
-      box-shadow: 0 0 32px var(--accent), 0 0 10px rgba(0,0,0,0.3);
-      padding: 32px 24px;
+      background: #1a1a1e;
+      padding: 1.5rem;
+      border-radius: 20px;
+      box-shadow: 0 0 30px #00f0ff88;
       width: 100%;
-      max-width: 420px;
+      max-width: 400px;
     }
 
-    #screen {
+    .display {
+      background: #000;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: inset 0 0 8px #00f0ff;
+      margin-bottom: 1rem;
+    }
+
+    .display input {
       width: 100%;
-      height: 64px;
-      font-size: 1.6rem;
-      text-align: right;
-      padding: 14px;
+      font-size: 2rem;
+      background: transparent;
       border: none;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.08);
       color: var(--text);
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
       outline: none;
-      margin-bottom: 10px;
-      cursor: pointer;
     }
 
-    #preview {
-      text-align: right;
+    .preview {
       font-size: 1rem;
-      color: var(--accent);
-      margin-bottom: 16px;
-      min-height: 20px;
+      opacity: 0.6;
     }
 
     .buttons {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+      gap: 0.75rem;
     }
 
     button {
-      font-size: 1.2rem;
-      padding: 16px;
-      font-weight: bold;
+      padding: 1rem;
+      font-size: 1.25rem;
       border: none;
       border-radius: 12px;
-      background-color: var(--accent);
-      color: #000;
+      background: #1f1f24;
+      color: var(--text);
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.3s ease;
-      box-shadow: 0 0 14px var(--accent), 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 0 5px #00f0ff88;
+      transition: all 0.2s;
     }
 
     button:hover {
-      transform: scale(1.06);
-      box-shadow: 0 0 24px var(--accent), 0 6px 18px rgba(0,0,0,0.5);
+      box-shadow: 0 0 10px #00f0ff;
+      background: #25252c;
     }
 
-    #favorites button {
-      background-color: #222;
-      color: var(--accent);
-      font-size: 1rem;
-      margin: 4px;
-      box-shadow: none;
-    }
-
-    #history {
-      margin-top: 20px;
-      max-height: 180px;
-      overflow-y: auto;
-      background-color: var(--glass);
-      padding: 12px;
-      border-radius: 14px;
-      box-shadow: inset 0 0 14px rgba(0,0,0,0.2);
-    }
-
-    .history-entry {
-      padding: 6px 0;
-      cursor: pointer;
-    }
-
-    #themeToggle, #voiceBtn {
-      cursor: pointer;
-      font-size: 1.4rem;
-      margin-bottom: 16px;
-      border: none;
-      background: transparent;
-      color: var(--text);
-      filter: drop-shadow(0 0 6px var(--accent));
-    }
-
-    .header-buttons {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    button.accent {
+      background: var(--accent);
+      color: #000;
+      font-weight: bold;
+      box-shadow: 0 0 10px var(--accent);
     }
 
     .toast {
       position: fixed;
-      bottom: 24px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background-color: var(--accent);
-      color: #000;
-      padding: 12px 24px;
-      border-radius: 14px;
-      box-shadow: 0 0 22px var(--accent);
-      z-index: 9999;
-      animation: fadeout 3s forwards;
-      font-weight: bold;
+      background: #333;
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 999px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease-in-out;
     }
 
-    @keyframes fadeout {
-      0%, 85% { opacity: 1; }
-      100% { opacity: 0; }
+    .toast.show {
+      opacity: 1;
     }
 
-    @media (max-width: 480px) {
-      .calculator { padding: 20px; }
-      button { padding: 12px; font-size: 1rem; }
-      #screen { font-size: 1.3rem; height: 52px; padding: 10px; }
+    .theme-toggle {
+      margin-bottom: 1rem;
     }
   </style>
 </head>
-<body>
-  <div class="calculator">
-    <div class="header-buttons">
-      <button id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
-      <button id="voiceBtn" onclick="toggleVoice()" aria-label="Start voice input">🎤</button>
-    </div>
 
-    <input type="text" id="screen" readonly title="Click to copy result"/>
-    <div id="preview"></div>
+<body>
+  <div class="theme-toggle">
+    <button onclick="toggleTheme()">🌓 Theme</button>
+  </div>
+
+  <div class="calculator">
+    <div class="display">
+      <input id="screen" readonly value="" placeholder="0" oninput="livePreview()" />
+      <div class="preview" id="preview"></div>
+    </div>
 
     <div class="buttons">
       <button onclick="append('7')">7</button>
       <button onclick="append('8')">8</button>
       <button onclick="append('9')">9</button>
-      <button onclick="del()">⌫</button>
+      <button onclick="append('/')">/</button>
+
       <button onclick="append('4')">4</button>
       <button onclick="append('5')">5</button>
       <button onclick="append('6')">6</button>
-      <button onclick="append('+')">+</button>
+      <button onclick="append('*')">*</button>
+
       <button onclick="append('1')">1</button>
       <button onclick="append('2')">2</button>
       <button onclick="append('3')">3</button>
       <button onclick="append('-')">-</button>
+
       <button onclick="append('0')">0</button>
       <button onclick="append('.')">.</button>
+      <button onclick="append('+')">+</button>
       <button onclick="calculate()">=</button>
-      <button onclick="append('*')">*</button>
-      <button onclick="append('(')">(</button>
-      <button onclick="smartClose()">)</button>
-      <button onclick="clearScreen()">C</button>
-      <button onclick="append('/')">/</button>
-    </div>
 
-    <div id="history"></div>
-    <button style="margin-top: 12px;" onclick="clearHistory()">🗑 Clear History</button>
+      <button onclick="append('(')">(</button>
+      <button onclick="append(')')">)</button>
+      <button onclick="clearScreen()">C</button>
+      <button onclick="backspace()">⌫</button>
+    </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.1/math.min.js"></script>
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
   <script>
     const screen = document.getElementById('screen');
-    const historyContainer = document.getElementById('history');
     const preview = document.getElementById('preview');
-    const themeToggle = document.getElementById('themeToggle');
-    const voiceBtn = document.getElementById('voiceBtn');
-
-    let history = JSON.parse(localStorage.getItem('history')) || [];
-    let recognition, recognizing = false;
-
-    function toast(message) {
-      const t = document.createElement('div');
-      t.className = 'toast';
-      t.innerText = message;
-      document.body.appendChild(t);
-      setTimeout(() => t.remove(), 3000);
-    }
+    const toastEl = document.getElementById('toast');
 
     function append(val) {
-      const lastChar = screen.value.slice(-1);
-      const isOp = /[+\-*/.]/;
-      if (isOp.test(lastChar) && isOp.test(val)) return;
       screen.value += val;
       livePreview();
     }
 
-    function smartClose() {
-      const openCount = (screen.value.match(/\(/g) || []).length;
-      const closeCount = (screen.value.match(/\)/g) || []).length;
-      if (openCount > closeCount) append(')');
-    }
-
-    function livePreview() {
-      try {
-        const result = math.evaluate(screen.value);
-        preview.innerText = "= " + result;
-      } catch {
-        preview.innerText = '';
-      }
-    }
-
-    function calculate() {
-      const expr = screen.value.trim();
-      if (!expr) return;
-      try {
-        const res = math.evaluate(expr);
-        screen.value = res;
-        preview.innerText = '';
-        addToHistory(expr, res);
-      } catch {
-        toast('❌ Invalid Expression');
-      }
-    }
-
-    function addToHistory(expr, res) {
-      const entry = `${expr} = ${res}`;
-      history.push(entry);
-      localStorage.setItem('history', JSON.stringify(history));
-      renderHistory();
-    }
-
-    function renderHistory() {
-      const entries = history.slice(-10).reverse();
-      historyContainer.innerHTML = '<h4>History</h4>' + entries.map(entry =>
-        `<div class="history-entry" onclick="loadHistory('${entry.replace(/'/g, "\\'")}')">${entry}</div>`
-      ).join('');
-    }
-
-    function loadHistory(entry) {
-      const expr = entry.split('=')[0].trim();
-      screen.value = expr;
-      livePreview();
-    }
-
-    function del() {
+    function backspace() {
       screen.value = screen.value.slice(0, -1);
       livePreview();
     }
 
     function clearScreen() {
       screen.value = '';
-      preview.innerText = '';
+      preview.textContent = '';
     }
 
-    function clearHistory() {
-      if (confirm("Clear history?")) {
-        history = [];
-        localStorage.removeItem('history');
-        renderHistory();
+    function calculate() {
+      try {
+        screen.value = math.evaluate(screen.value);
+        preview.textContent = '';
+      } catch {
+        toast('❌ Invalid Expression');
       }
+    }
+
+    function livePreview() {
+      try {
+        preview.textContent = '= ' + math.evaluate(screen.value);
+      } catch {
+        preview.textContent = '';
+      }
+    }
+
+    function toast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      setTimeout(() => toastEl.classList.remove('show'), 2000);
     }
 
     function toggleTheme() {
-      const isLight = document.body.classList.toggle('light');
-      localStorage.setItem('theme', isLight ? 'light' : 'dark');
-      themeToggle.textContent = isLight ? '☀️' : '🌙';
-    }
-
-    screen.onclick = () => {
-      if (screen.value) {
-        navigator.clipboard.writeText(screen.value);
-        toast('✅ Result copied!');
+      const root = document.documentElement;
+      if (root.style.getPropertyValue('--bg') === '#0e0e10') {
+        root.style.setProperty('--bg', '#f5f5f5');
+        root.style.setProperty('--text', '#111');
+        root.style.setProperty('--accent', '#0077ff');
+      } else {
+        root.style.setProperty('--bg', '#0e0e10');
+        root.style.setProperty('--text', '#f9f9f9');
+        root.style.setProperty('--accent', '#00f0ff');
       }
-    };
+    }
 
     document.addEventListener('keydown', e => {
-      const allowedKeys = '0123456789+-*/().';
-      if (allowedKeys.includes(e.key)) append(e.key);
-      if (e.key === 'Enter') calculate();
-      if (e.key === 'Backspace') del();
-      if (e.key === 'Escape') clearScreen();
+      if (e.key.toLowerCase() === 't') toggleTheme();
     });
-
-    function toggleVoice() {
-      if (!('webkitSpeechRecognition' in window)) {
-        toast('❌ Voice not supported in this browser');
-        return;
-      }
-
-      const voiceMap = {
-        'plus': '+', 'minus': '-', 'times': '*', 'multiplied by': '*',
-        'divide': '/', 'divided by': '/', 'open bracket': '(', 'close bracket': ')',
-        'point': '.', 'dot': '.', 'equals': '=', 'equal': '='
-      };
-
-      if (!recognition) {
-        recognition = new webkitSpeechRecognition();
-        recognition.continuous = false;
-        recognition.lang = 'en-US';
-
-        recognition.onstart = () => {
-          recognizing = true;
-          voiceBtn.textContent = '🔴';
-          toast('🎤 Listening...');
-        };
-
-        recognition.onend = () => {
-          recognizing = false;
-          voiceBtn.textContent = '🎤';
-        };
-
-        recognition.onerror = () => {
-          recognizing = false;
-          voiceBtn.textContent = '🎤';
-          toast('❌ Voice error');
-        };
-
-        recognition.onresult = (event) => {
-          const transcript = event.results[0][0].transcript.toLowerCase();
-          const converted = transcript.split(' ').map(word => voiceMap[word] ?? word).join('');
-          append(converted);
-        };
-      }
-
-      if (recognizing) {
-        recognition.stop();
-      } else {
-        recognition.start();
-      }
-    }
-
-    window.onload = () => {
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      document.body.classList.toggle('light', savedTheme === 'light');
-      themeToggle.textContent = savedTheme === 'light' ? '☀️' : '🌙';
-      renderHistory();
-    };
   </script>
 </body>
 </html>
