@@ -10,9 +10,7 @@
       --bg: #0e0e10;
       --text: #f9f9f9;
       --accent: #00f0ff;
-      --danger: #ff4d4d;
       --card: #1a1a1e;
-      --glow: 0 0 12px var(--accent);
     }
 
     body {
@@ -33,10 +31,10 @@
       background: var(--card);
       padding: 1.5rem;
       border-radius: 24px;
-      box-shadow: 0 0 40px #00f0ff55;
+      box-shadow: 0 0 40px var(--accent);
       width: 100%;
       max-width: 420px;
-      transition: box-shadow 0.4s, background 0.4s;
+      transition: all 0.4s ease-in-out;
     }
 
     .display {
@@ -45,6 +43,7 @@
       border-radius: 16px;
       box-shadow: inset 0 0 12px var(--accent);
       margin-bottom: 1.2rem;
+      transition: box-shadow 0.4s;
     }
 
     .display input {
@@ -77,15 +76,15 @@
       background: #1f1f24;
       color: var(--text);
       cursor: pointer;
-      box-shadow: 0 4px 12px #00f0ff44;
-      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px var(--accent);
+      transition: all 0.25s ease;
       transform: translateY(0);
     }
 
     button:hover {
       background: #25252c;
       box-shadow: 0 0 14px var(--accent);
-      transform: translateY(-2px) scale(1.05);
+      transform: translateY(-3px) scale(1.05);
     }
 
     button:active {
@@ -118,25 +117,34 @@
       opacity: 1;
     }
 
-    .theme-toggle {
+    .theme-select {
       margin-bottom: 1rem;
     }
 
-    .theme-toggle button {
-      padding: 0.6rem 1.2rem;
+    .theme-select select {
+      padding: 0.6rem 1rem;
       font-size: 1rem;
       border-radius: 10px;
+      border: none;
       background: var(--accent);
       color: #000;
       font-weight: bold;
       box-shadow: 0 0 8px var(--accent);
+      cursor: pointer;
     }
   </style>
 </head>
 
 <body>
-  <div class="theme-toggle">
-    <button onclick="toggleTheme()">🌓 Theme</button>
+  <div class="theme-select">
+    <select onchange="setTheme(this.value)">
+      <option value="dark">🌑 Dark</option>
+      <option value="light">☀️ Light</option>
+      <option value="neon">🌌 Neon</option>
+      <option value="matrix">🟢 Matrix</option>
+      <option value="aurora">🌈 Aurora</option>
+      <option value="cyber">🤖 Cyber</option>
+    </select>
   </div>
 
   <div class="calculator">
@@ -223,20 +231,44 @@
       setTimeout(() => toastEl.classList.remove('show'), 2000);
     }
 
-    function toggleTheme() {
+    function setTheme(theme) {
       const root = document.documentElement;
-      if (root.style.getPropertyValue('--bg') === '#0e0e10') {
-        // Light Mode
-        root.style.setProperty('--bg', '#f5f5f5');
-        root.style.setProperty('--text', '#111');
-        root.style.setProperty('--card', '#fff');
-        root.style.setProperty('--accent', '#0077ff');
-      } else {
-        // Dark Mode
-        root.style.setProperty('--bg', '#0e0e10');
-        root.style.setProperty('--text', '#f9f9f9');
-        root.style.setProperty('--card', '#1a1a1e');
-        root.style.setProperty('--accent', '#00f0ff');
+      switch (theme) {
+        case "light":
+          root.style.setProperty('--bg', '#f5f5f5');
+          root.style.setProperty('--text', '#111');
+          root.style.setProperty('--card', '#fff');
+          root.style.setProperty('--accent', '#0077ff');
+          break;
+        case "neon":
+          root.style.setProperty('--bg', '#0f0f1a');
+          root.style.setProperty('--text', '#fff');
+          root.style.setProperty('--card', '#141424');
+          root.style.setProperty('--accent', '#ff00ff');
+          break;
+        case "matrix":
+          root.style.setProperty('--bg', '#000');
+          root.style.setProperty('--text', '#0f0');
+          root.style.setProperty('--card', '#001100');
+          root.style.setProperty('--accent', '#00ff88');
+          break;
+        case "aurora":
+          root.style.setProperty('--bg', 'linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d)');
+          root.style.setProperty('--text', '#fff');
+          root.style.setProperty('--card', 'rgba(0,0,0,0.5)');
+          root.style.setProperty('--accent', '#00e0ff');
+          break;
+        case "cyber":
+          root.style.setProperty('--bg', '#12001a');
+          root.style.setProperty('--text', '#00ffe5');
+          root.style.setProperty('--card', '#1a0024');
+          root.style.setProperty('--accent', '#ff0080');
+          break;
+        default: // dark
+          root.style.setProperty('--bg', '#0e0e10');
+          root.style.setProperty('--text', '#f9f9f9');
+          root.style.setProperty('--card', '#1a1a1e');
+          root.style.setProperty('--accent', '#00f0ff');
       }
     }
 
@@ -251,8 +283,6 @@
         backspace();
       } else if (e.key.toLowerCase() === 'c') {
         clearScreen();
-      } else if (e.key.toLowerCase() === 't') {
-        toggleTheme();
       }
     });
   </script>
