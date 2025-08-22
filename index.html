@@ -22,7 +22,7 @@
       justify-content: center;
     }
     .calculator {
-      width: 380px;
+      width: 400px;
       background: rgba(20, 20, 30, 0.8);
       border-radius: 20px;
       box-shadow: 0 8px 25px rgba(0,0,0,0.6);
@@ -30,6 +30,7 @@
       display: flex;
       flex-direction: column;
       backdrop-filter: blur(12px);
+      position: relative;
     }
     .display {
       width: 100%;
@@ -45,7 +46,7 @@
       color: var(--text);
       box-shadow: inset 0 3px 6px rgba(0,0,0,0.4);
     }
-    .row, .favorites-row, .memory-row {
+    .row, .favorites-row, .memory-row, .extra-row {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 0.6rem;
@@ -61,12 +62,30 @@
       cursor: pointer;
       transition: all 0.2s ease;
       box-shadow: 0 3px 8px rgba(0,0,0,0.6);
+      position: relative;
+      overflow: hidden;
     }
     button:hover {
       background: var(--accent);
       color: #000;
       transform: translateY(-2px);
       box-shadow: 0 6px 12px var(--accent);
+    }
+    button::after {
+      content: "";
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: rgba(255,255,255,0.3);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      border-radius: 50%;
+      transition: transform 0.4s ease;
+      pointer-events: none;
+    }
+    button:active::after {
+      transform: translate(-50%, -50%) scale(1);
     }
     .danger {
       background: var(--danger);
@@ -91,7 +110,8 @@
       box-shadow: -4px 0 12px rgba(0,0,0,0.5);
       padding: 1rem;
       overflow-y: auto;
-      transition: right 0.3s ease;
+      transition: right 0.4s cubic-bezier(0.77,0,0.175,1);
+      backdrop-filter: blur(10px);
     }
     .history-panel.open {
       right: 0;
@@ -107,8 +127,12 @@
       border-radius: 6px;
       background: rgba(255,255,255,0.05);
       cursor: pointer;
+      transition: background 0.2s;
     }
-    /* Aurora Theme Glassmorphism */
+    .history-item:hover {
+      background: rgba(255,255,255,0.15);
+    }
+    /* Aurora Theme */
     body.aurora {
       background: linear-gradient(135deg, rgba(0,255,200,0.3), rgba(0,150,255,0.3), rgba(255,0,200,0.2));
       backdrop-filter: blur(18px);
@@ -137,12 +161,18 @@
       <button onclick="memorySubtract()">M-</button>
     </div>
 
-    <!-- Trigonometry -->
-    <div class="row">
+    <!-- Trigonometry & Extras -->
+    <div class="extra-row">
       <button onclick="insert('sin(')">sin</button>
       <button onclick="insert('cos(')">cos</button>
       <button onclick="insert('tan(')">tan</button>
       <button onclick="insert('ln(')">ln</button>
+    </div>
+    <div class="extra-row">
+      <button onclick="insert('abs(')">abs</button>
+      <button onclick="insert('rand()')">rand</button>
+      <button onclick="insert('fact(')">n!</button>
+      <button onclick="voiceInput()">🎤</button>
     </div>
 
     <!-- Digits & Ops -->
@@ -206,20 +236,27 @@
   let historyData = [];
 
   function insert(val) {
-    if(val === 'π') val = Math.PI;
-    if(val === 'e') val = Math.E;
     display.value += val;
   }
   function clearDisplay() {
     display.value = "";
   }
+  function factorial(n) {
+    if (n < 0) return NaN;
+    return n <= 1 ? 1 : n * factorial(n - 1);
+  }
   function calculate() {
     try {
-      let expr = display.value.replace(/√/g,"Math.sqrt")
-                              .replace(/π/g,"Math.PI")
-                              .replace(/e/g,"Math.E")
-                              .replace(/log/g,"Math.log10")
-                              .replace(/ln/g,"Math.log");
+      let expr = display.value
+        .replace(/√/g,"Math.sqrt")
+        .replace(/π/g,"Math.PI")
+        .replace(/e/g,"Math.E")
+        .replace(/log/g,"Math.log10")
+        .replace(/ln/g,"Math.log")
+        .replace(/abs/g,"Math.abs")
+        .replace(/rand\(\)/g,"Math.random()")
+        .replace(/(\d+)!/g, "factorial($1)");
+
       if(degRad.checked) {
         expr = expr.replace(/sin\((.*?)\)/g,"Math.sin(($1)*Math.PI/180)")
                    .replace(/cos\((.*?)\)/g,"Math.cos(($1)*Math.PI/180)")
@@ -229,9 +266,12 @@
                    .replace(/cos/g,"Math.cos")
                    .replace(/tan/g,"Math.tan");
       }
-      expr = expr.replace(/(\d+)\^(\d+)/g,"Math.pow($1,$2)");
+      expr = expr.replace(/(\d+(?:\.\d+)?)\^(\d+(?:\.\d+)?)/g,"Math.pow($1,$2)");
+      expr = expr.replace(/(\d)(Math\.)/g,"$1*$2"); // implicit multiplication
+
       let result = eval(expr);
       historyData.push(display.value + " = " + result);
+      if(historyData.length>50) historyData.shift();
       localStorage.setItem("calc-history", JSON.stringify(historyData));
       updateHistory();
       display.value = result;
@@ -255,6 +295,10 @@
       item.className = "history-item";
       item.textContent = h;
       item.onclick = () => { display.value = h.split("=")[1].trim(); };
+      item.oncontextmenu = e => {
+        e.preventDefault();
+        navigator.clipboard.writeText(h);
+      };
       historyList.appendChild(item);
     });
   }
@@ -279,24 +323,40 @@
     }
   });
 
-  // Keyboard support (including history navigation)
+  // Keyboard support
   let historyIndex = -1;
   document.addEventListener("keydown", e => {
     if(e.key==="Enter") calculate();
     if(e.key==="Backspace") display.value = display.value.slice(0,-1);
-    if(e.key==="ArrowUp") {
-      if(historyData.length>0) {
-        historyIndex = (historyIndex<=0)? historyData.length-1 : historyIndex-1;
-        display.value = historyData[historyIndex].split("=")[0].trim();
-      }
+    if(e.key==="ArrowUp" && historyData.length>0) {
+      historyIndex = (historyIndex<=0)? historyData.length-1 : historyIndex-1;
+      display.value = historyData[historyIndex].split("=")[0].trim();
     }
-    if(e.key==="ArrowDown") {
-      if(historyData.length>0) {
-        historyIndex = (historyIndex>=historyData.length-1)?0:historyIndex+1;
-        display.value = historyData[historyIndex].split("=")[0].trim();
-      }
+    if(e.key==="ArrowDown" && historyData.length>0) {
+      historyIndex = (historyIndex>=historyData.length-1)?0:historyIndex+1;
+      display.value = historyData[historyIndex].split("=")[0].trim();
     }
   });
+
+  // Voice Input
+  function voiceInput(){
+    if(!('webkitSpeechRecognition' in window)) {
+      alert("Voice recognition not supported");
+      return;
+    }
+    let recognition = new webkitSpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.start();
+    recognition.onresult = e => {
+      let transcript = e.results[0][0].transcript;
+      transcript = transcript
+        .replace(/plus/gi, "+")
+        .replace(/minus/gi, "-")
+        .replace(/times|multiply/gi, "*")
+        .replace(/divide/gi, "/");
+      display.value += transcript;
+    };
+  }
 </script>
 </body>
 </html>
